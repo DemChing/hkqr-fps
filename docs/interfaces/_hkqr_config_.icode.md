@@ -1,4 +1,4 @@
-[hkqr-fps](../README.md) › [Globals](../globals.md) › ["HKQR/config"](../modules/_hkqr_config_.md) › [ICODE](_hkqr_config_.icode.md)
+[hkqr-fps](../README.md) › ["HKQR/config"](../modules/_hkqr_config_.md) › [ICODE](_hkqr_config_.icode.md)
 
 # Interface: ICODE
 

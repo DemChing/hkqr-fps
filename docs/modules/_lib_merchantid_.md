@@ -1,4 +1,4 @@
-[hkqr-fps](../README.md) › [Globals](../globals.md) › ["lib/merchantID"](_lib_merchantid_.md)
+[hkqr-fps](../README.md) › ["lib/merchantID"](_lib_merchantid_.md)
 
 # Module: "lib/merchantID"
 

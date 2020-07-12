@@ -1,4 +1,4 @@
-[hkqr-fps](../README.md) › [Globals](../globals.md) › ["lib/constant"](../modules/_lib_constant_.md) › [__global](../modules/_lib_constant_.__global.md) › [Window](_lib_constant_.__global.window.md)
+[hkqr-fps](../README.md) › ["lib/constant"](../modules/_lib_constant_.md) › [__global](../modules/_lib_constant_.__global.md) › [Window](_lib_constant_.__global.window.md)
 
 # Interface: Window
 

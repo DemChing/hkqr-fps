@@ -1,4 +1,4 @@
-[hkqr-fps](../README.md) › [Globals](../globals.md) › ["FPS/index"](_fps_index_.md)
+[hkqr-fps](../README.md) › ["FPS/index"](_fps_index_.md)
 
 # Module: "FPS/index"
 

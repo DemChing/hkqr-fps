@@ -1,4 +1,4 @@
-[hkqr-fps](../README.md) › [Globals](../globals.md) › ["lib/utils"](_lib_utils_.md)
+[hkqr-fps](../README.md) › ["lib/utils"](_lib_utils_.md)
 
 # Module: "lib/utils"
 

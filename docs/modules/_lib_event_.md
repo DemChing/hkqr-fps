@@ -1,4 +1,4 @@
-[hkqr-fps](../README.md) › [Globals](../globals.md) › ["lib/event"](_lib_event_.md)
+[hkqr-fps](../README.md) › ["lib/event"](_lib_event_.md)
 
 # Module: "lib/event"
 

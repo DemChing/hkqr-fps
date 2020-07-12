@@ -1,4 +1,4 @@
-[hkqr-fps](../README.md) › [Globals](../globals.md) › ["FPS/config"](_fps_config_.md)
+[hkqr-fps](../README.md) › ["FPS/config"](_fps_config_.md)
 
 # Module: "FPS/config"
 

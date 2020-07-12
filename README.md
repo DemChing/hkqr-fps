@@ -33,34 +33,43 @@ __ATTENTION:__ This repository __DO NOT__ generate or decode QR Code. It only ha
 
 ### Extract and Parse
 - `HKQR.extract(x?: string): Event` / `FPS.extract(x: string): Event`
+
 Extracts the data from the QR Code if provided a `string`. Returns its data otherwise.
 
 - `HKQR.parse(x: string): Event` / `FPS.parse(x: string): Event`
+
 Runs `extract()` and updates its data if extracts success.
 
 ### Generate Output
 - `HKQR.generate(): Event` / `FPS.generate(): Event`
+
 Generate final output for create QR Code.
 
 ### Merchant/Receipant Identifier
 - `HKQR.setMerchantAccountFPSId(x: number | string): Event` / `FPS.setFPSId(x: number | string): Event`
+
 Set 7-digit / 9-digit FPS ID as identifier.
 
 - `HKQR.setMerchantAccountMobile(x: number | string): Event` / `FPS.setMobile(x: number | string): Event`
+
 Set mobile number as identifier. Format: `+852-12345678`
 
 - `HKQR.setMerchantAccountEmail(x: string): Event` / `FPS.setEmail(x: string): Event`
+
 Set email as identifier.
 
 ### Transaction Amount
 - `HKQR.setTransactionAmount(x: number | string, fraction: number | boolean = false): Event` / `FPS.setAmount(x: number): Event`
+
 For `HKQR.setTransactionAmount`, you can convert a number to string in fixed-point notation (i.e. `x.toFixed(fraction)`)
 
 ### Billing Information
 - `HKQR.setBillNumber(x: string): Event` / `FPS.setBillNumber(x: string): Event`
+
 Set the bill number/identifier provided by the merchant.
 
 - `HKQR.setReferenceLabel(x: string): Event` / `FPS.setReference(x: string): Event`
+
 Set reference detail of the billing.
 
 ## Event
@@ -69,3 +78,6 @@ Most of the functions return an `Event` class object. If there is no error, you 
 If there is any error, it will throw the error message causing the script to end. However, you can run `HKQR.Silent()` / `FPS.Silent()` to stop this behavior.
 
 To handle error with silent enabled, you can use `event.isError()` to check if error exists. Get the error message with `event.message`.
+
+## Documentation
+Check [here](https://demching.github.io/hkqr-fps/)

@@ -1,4 +1,4 @@
-[hkqr-fps](../README.md) › [Globals](../globals.md) › ["lib/crc"](_lib_crc_.md)
+[hkqr-fps](../README.md) › ["lib/crc"](_lib_crc_.md)
 
 # Module: "lib/crc"
 

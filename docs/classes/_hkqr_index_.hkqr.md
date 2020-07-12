@@ -1,4 +1,4 @@
-[hkqr-fps](../README.md) › [Globals](../globals.md) › ["HKQR/index"](../modules/_hkqr_index_.md) › [HKQR](_hkqr_index_.hkqr.md)
+[hkqr-fps](../README.md) › ["HKQR/index"](../modules/_hkqr_index_.md) › [HKQR](_hkqr_index_.hkqr.md)
 
 # Class: HKQR
 

@@ -1,4 +1,4 @@
-[hkqr-fps](../README.md) › [Globals](../globals.md) › ["FPS/index"](../modules/_fps_index_.md) › [FPS](_fps_index_.fps.md)
+[hkqr-fps](../README.md) › ["FPS/index"](../modules/_fps_index_.md) › [FPS](_fps_index_.fps.md)
 
 # Class: FPS
 

@@ -1,4 +1,4 @@
-[hkqr-fps](../README.md) › [Globals](../globals.md) › ["lib/constant"](_lib_constant_.md)
+[hkqr-fps](../README.md) › ["lib/constant"](_lib_constant_.md)
 
 # Module: "lib/constant"
 

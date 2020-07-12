@@ -22,7 +22,7 @@
     "build:esm": "npx tsc -m es6 --outDir dist/esm",
     "build:webpack": "npx webpack --mode=production",
     "build:typedoc": "npm run build:doc && npm run build:md-doc",
-    "build:doc": "npx typedoc --disableOutputCheck",
+    "build:doc": "npx typedoc --disableOutputCheck --readme none",
     "build:md-doc": "npx typedoc --theme markdown --out md-docs --disableOutputCheck",
     "test": "node test/start.js"
   },
