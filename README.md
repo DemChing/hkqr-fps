@@ -80,6 +80,6 @@ If there is any error, it will throw the error message causing the script to end
 To handle error with silent enabled, you can use `event.isError()` to check if error exists. Get the error message with `event.message`.
 
 ## Documentation
-For `HKQR`, check [here](https://demching.github.io/hkqr-fps/classes/_hkqr_index_.hkqr.html).
+For `HKQR`, check [here](https://demching.github.io/hkqr-fps/classes/HKQR.html).
 
-For `FPS`, check [here](https://demching.github.io/hkqr-fps/classes/_fps_index_.fps.html).
+For `FPS`, check [here](https://demching.github.io/hkqr-fps/classes/FPS.html).

@@ -1,7 +1,7 @@
 import Event from "../lib/event";
 import { VALID_OBJECT } from "../lib/constant"
 
-export const COUNTRY = {
+export const FPS_COUNTRY = {
     CN: "cn",
     GB: "gb",
     HK: "hk",
@@ -9,18 +9,18 @@ export const COUNTRY = {
     TW: "tw",
     US: "us",
 } as const;
-export const CURRENCY = {
+export const FPS_CURRENCY = {
     CNY: "156",
     HKD: "344",
     TWD: "901",
     USD: "840",
 } as const;
-export const LANGUAGE = {
+export const FPS_LANGUAGE = {
     EN: "en",
     ZH: "zh",
 } as const;
-export const MERCHANT = "26";
-export const PARTICIPANT = {
+export const FPS_MERCHANT = "26";
+export const FPS_PARTICIPANT = {
     "003": "STANDARD CHARTERED BANK (HONG KONG) LIMITED",
     "004": "The Hongkong and Shanghai Banking Corporation Limited",
     "009": "China Construction Bank (Asia) Corporation Limited",
@@ -65,20 +65,20 @@ export const PARTICIPANT = {
     "954": "PayMe",
 } as const;
 
-export type COUNTRY = keyof typeof COUNTRY;
-export type CURRENCY = keyof typeof CURRENCY;
-export type LANGUAGE = keyof typeof LANGUAGE;
-export type MERCHANT = typeof MERCHANT;
-export type PARTICIPANTS = keyof typeof PARTICIPANT;
+export type FPS_COUNTRY = keyof typeof FPS_COUNTRY;
+export type FPS_CURRENCY = keyof typeof FPS_CURRENCY;
+export type FPS_LANGUAGE = keyof typeof FPS_LANGUAGE;
+export type FPS_MERCHANT = typeof FPS_MERCHANT;
+export type FPS_PARTICIPANTS = keyof typeof FPS_PARTICIPANT;
 
 export type MERCHANT_INFO = {
-    language: LANGUAGE; // ID: 00
+    language: FPS_LANGUAGE; // ID: 00
     merchantName: string; // ID: 01
     merchantCity?: string; // ID: 02
     extra?: VALID_OBJECT; // ID: [03..99]
 };
 
-export interface ICODE {
+export interface IFPS_CODE {
     parse(x: string): Event;
     extract(x: string): Event;
     generate(): Event;
@@ -87,7 +87,7 @@ export interface ICODE {
     setDynamic(): Event;
     setMerchantAccount(x: VALID_OBJECT): Event;
     getBank(toName: boolean): Event;
-    setBank(x: PARTICIPANTS): Event;
+    setBank(x: FPS_PARTICIPANTS): Event;
     getFPSId(): Event;
     setFPSId(x: number | string): Event;
     getMobile(): Event;
@@ -104,5 +104,5 @@ export interface ICODE {
     setHKD(): Event;
     setCNY(): Event;
     getCurrency(toCode: boolean): Event;
-    setCurrency(x: CURRENCY): Event;
+    setCurrency(x: FPS_CURRENCY): Event;
 }

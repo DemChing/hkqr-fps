@@ -79,6 +79,41 @@ export type EXTRACTS = {
     [key in VALID_ID]?: string | EXTRACTS;
 }
 
+// Useful constant
+export const USEFUL_CONSTANT = {
+    BANK_STANDARD_CHARTERED: "003",
+    BANK_HSBC: "004",
+    BANK_BANK_OF_CHINA: "012",
+    BANK_EAST_ASIA: "015",
+    BANK_DBS: "016",
+    BANK_HANG_SANG: "024",
+    BANK_CITIBANK: "250",
+    BANK_WECHAT: "931",
+    BANK_TAP_N_GO: "935",
+    BANK_TNG: "947",
+    BANK_ALIPAY: "948",
+    BANK_OCTOPUS: "949",
+    BANK_PAYME: "954",
+    CURRENCY_HKD: "HKD",
+    CURRENCY_CNY: "CNY",
+    CURRENCY_TWD: "TWD",
+    CURRENCY_USD: "USD",
+    LANGUAGE_CHINESE: "ZH",
+    LANGUAGE_ENGLISH: "EN",
+    LOCATION_HONG_KONG: "HK",
+    LOCATION_CHINA: "CN",
+    LOCATION_TAIWAN: "TW",
+    LOCATION_MACAO: "MO",
+    LOCATION_USA: "US",
+    LOCATION_UK: "GB",
+    MERCHANT_ID_FPS: "26",
+    FPS_EMAIL_IRD_PROFITS_TAX: "FPS_Identifier_CRC201A@ird.gov.hk",
+    FPS_EMAIL_IRD_SALARIES_TAX: "FPS_Identifier_CRC201B@ird.gov.hk",
+    FPS_EMAIL_IRD_PERSONAL_ASSESSMENT: "FPS_Identifier_CRC201D@ird.gov.hk",
+    FPS_EMAIL_WSD: "wsdinfo@wsd.gov.hk",
+    FPS_ID_CLP: "4853305",
+} as const;
+
 declare global {
     interface Window {
         HKQR?: any;

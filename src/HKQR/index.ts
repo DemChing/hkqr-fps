@@ -5,10 +5,10 @@ import crc16 from "../lib/crc";
 import { extract, isAlphanumericSpecial, numberToValidId } from "../lib/utils";
 
 // Import data
-import { ISO_COUNTRY, ISO_CURRENCY, ISO_LANGUAGE, ISO_MERCHANT_CATEGORY, MERCHANT, PARTICIPANT, MERCHANT_ACCOUNTS, COUNTRY, CURRENCY, LANGUAGE, MERCHANT_CATEGORY, PARTICIPANTS, MERCHANT_INFO } from "./config";
+import { ISO_COUNTRY, ISO_CURRENCY, ISO_LANGUAGE, ISO_MERCHANT_CATEGORY, HKQR_MERCHANT, HKQR_PARTICIPANT, MERCHANT_ACCOUNTS, HKQR_COUNTRY, HKQR_CURRENCY, HKQR_LANGUAGE, MERCHANT_CATEGORY, HKQR_PARTICIPANTS, MERCHANT_INFO } from "./config";
 
 // Import constants for Main ID
-import { FORMAT_INDICATOR, INITIATION_POINT, MERCHANT_CATEGORY_CODE, TRANSACTION_CURRENCY, TRANSACTION_AMOUNT, CONVENIENCE_FEE_INDICATOR, CONVENIENCE_FEE_FIXED, CONVENIENCE_FEE_PERCENT, COUNTRY_CODE, MERCHANT_NAME, MERCHANT_CITY, POSTAL_CODE, ADDITIONAL_INFORMATION, CYCLIC_REDUNDANCY_CHECK, LOCALIZE_MERCHANT } from "../lib/constant";
+import { FORMAT_INDICATOR, INITIATION_POINT, MERCHANT_CATEGORY_CODE, TRANSACTION_CURRENCY, TRANSACTION_AMOUNT, CONVENIENCE_FEE_INDICATOR, CONVENIENCE_FEE_FIXED, CONVENIENCE_FEE_PERCENT, COUNTRY_CODE, MERCHANT_NAME, MERCHANT_CITY, POSTAL_CODE, ADDITIONAL_INFORMATION, CYCLIC_REDUNDANCY_CHECK, LOCALIZE_MERCHANT, USEFUL_CONSTANT } from "../lib/constant";
 
 // Import constants for Sub ID or other value
 import { STATIC_QR_CODE, DYNAMIC_QR_CODE, MERCHANT_ACCOUNT_UNIQUE, MERCHANT_ACCOUNT_PARTICIPANT, MERCHANT_ACCOUNT_IDENTIFIER_FPS, MERCHANT_ACCOUNT_IDENTIFIER_MOBILE, MERCHANT_ACCOUNT_IDENTIFIER_EMAIL, MERCHANT_INFO_LANGUAGE, MERCHANT_INFO_NAME, MERCHANT_INFO_CITY, ADDITIONAL_INFO_BILL, ADDITIONAL_INFO_MOBILE, ADDITIONAL_INFO_STORE, ADDITIONAL_INFO_LOYALTY, ADDITIONAL_INFO_REFERENCE, ADDITIONAL_INFO_CUSTOMER, ADDITIONAL_INFO_TERMINAL, ADDITIONAL_INFO_PURPOSE, ADDITIONAL_INFO_REQUEST } from "../lib/constant";
@@ -16,12 +16,12 @@ import { STATIC_QR_CODE, DYNAMIC_QR_CODE, MERCHANT_ACCOUNT_UNIQUE, MERCHANT_ACCO
 // Import types
 import { VALID_ID, VALID_OBJECT, POINT_OF_INITIATION, CONVENIENCE_FEE, MERCHANT_ACCOUNT_INFO, ADDITIONAL_INFO } from "../lib/constant";
 
-import { ICODE } from "./config";
+import { IHKQR_CODE } from "./config";
 
 /**
  * Main class contains all the functions
  */
-export default class HKQR implements ICODE {
+export default class HKQR implements IHKQR_CODE {
     /** @category Format Indicator */
     private formatIndicator?: string = "01"; // ID: 00 // Fixed
     /** @category Point of Initiation */
@@ -35,7 +35,7 @@ export default class HKQR implements ICODE {
     /** @category Merchant Information */
     private merchantCategory: MERCHANT_CATEGORY = "0000"; // ID: 52 // 0000 is Dummy value
     /** @category Transaction Data */
-    private transactionCurrency: CURRENCY = "HKD"; // ID: 53
+    private transactionCurrency: HKQR_CURRENCY = "HKD"; // ID: 53
     /** @category Transaction Data */
     private transactionAmount?: string; // ID: 54
     /** @category Transaction Data */
@@ -45,7 +45,7 @@ export default class HKQR implements ICODE {
     /** @category Transaction Data */
     private convenienceFeePercent?: string; // ID: 57
     /** @category Merchant Information */
-    private countryCode: COUNTRY = "HK"; // ID: 58
+    private countryCode: HKQR_COUNTRY = "HK"; // ID: 58
     /** @category Merchant Information */
     private merchantName: string = "NA"; // ID: 59
     /** @category Merchant Information */
@@ -70,234 +70,241 @@ export default class HKQR implements ICODE {
     // Common Bank Participants
     /**
      * Standard Chartered Bank (Hong Kong) Limited
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountParticipantCode]]
      * @category Bank Participant
      */
-    static BANK_STANDARD_CHARTERED: PARTICIPANTS = "003";
+    static get BANK_STANDARD_CHARTERED() { return USEFUL_CONSTANT["BANK_STANDARD_CHARTERED"]; }
     /**
      * The Hongkong and Shanghai Banking Corporation Limited
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountParticipantCode]]
      * @category Bank Participant
      */
-    static BANK_HSBC: PARTICIPANTS = "004";
+    static get BANK_HSBC() { return USEFUL_CONSTANT["BANK_HSBC"]; }
     /**
      * Bank of China (Hong Kong) Limited
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountParticipantCode]]
      * @category Bank Participant
      */
-    static BANK_BANK_OF_CHINA: PARTICIPANTS = "012";
+    static get BANK_BANK_OF_CHINA() { return USEFUL_CONSTANT["BANK_BANK_OF_CHINA"]; }
     /**
      * The Bank of East Asia, Limited
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountParticipantCode]]
      * @category Bank Participant
      */
-    static BANK_EAST_ASIA: PARTICIPANTS = "015";
+    static get BANK_EAST_ASIA() { return USEFUL_CONSTANT["BANK_EAST_ASIA"]; }
     /**
      * DBS Bank (Hong Kong) Ltd.
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountParticipantCode]]
      * @category Bank Participant
      */
-    static BANK_DBS: PARTICIPANTS = "016";
+    static get BANK_DBS() { return USEFUL_CONSTANT["BANK_DBS"]; }
     /**
      * Hang Seng Bank Ltd.
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountParticipantCode]]
      * @category Bank Participant
      */
-    static BANK_HANG_SANG: PARTICIPANTS = "024";
+    static get BANK_HANG_SANG() { return USEFUL_CONSTANT["BANK_HANG_SANG"]; }
     /**
      * Citibank (Hong Kong) Limited
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountParticipantCode]]
      * @category Bank Participant
      */
-    static BANK_CITIBANK: PARTICIPANTS = "250";
+    static get BANK_CITIBANK() { return USEFUL_CONSTANT["BANK_CITIBANK"]; }
 
     // Common SVF Participants
-    /** 
+    /**
      * WeChat Pay Hong Kong Limited
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountParticipantCode]]
      * @category SVF Participant
      */
-    static BANK_WECHAT: PARTICIPANTS = "931";
+    static get BANK_WECHAT() { return USEFUL_CONSTANT["BANK_WECHAT"]; }
     /**
      * HKT Payment Limited
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountParticipantCode]]
      * @category SVF Participant
      */
-    static BANK_TAP_N_GO: PARTICIPANTS = "935";
+    static get BANK_TAP_N_GO() { return USEFUL_CONSTANT["BANK_TAP_N_GO"]; }
     /**
      * TNG (Asia) Limited
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountParticipantCode]]
      * @category SVF Participant
      */
-    static BANK_TNG: PARTICIPANTS = "947";
+    static get BANK_TNG() { return USEFUL_CONSTANT["BANK_TNG"]; }
     /**
      * Alipay Financial Services (HK) Limited
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountParticipantCode]]
      * @category SVF Participant
      */
-    static BANK_ALIPAY: PARTICIPANTS = "948";
+    static get BANK_ALIPAY() { return USEFUL_CONSTANT["BANK_ALIPAY"]; }
     /**
      * Octopus Cards Limited
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountParticipantCode]]
      * @category SVF Participant
      */
-    static BANK_OCTOPUS: PARTICIPANTS = "949";
+    static get BANK_OCTOPUS() { return USEFUL_CONSTANT["BANK_OCTOPUS"]; }
     /**
      * PayMe
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountParticipantCode]]
      * @category SVF Participant
      */
-    static BANK_PAYME: PARTICIPANTS = "954";
+    static get BANK_PAYME() { return USEFUL_CONSTANT["BANK_PAYME"]; }
 
     // Common Currency Code
-    /** 
+    /**
      * Hong Kong Dollar
-     * 
+     *
      * Used in [[HKQR.setTransactionCurrency]]
      * @category Currency
      */
-    static CURRENCY_HKD: CURRENCY = "HKD";
-    /** 
+    static get CURRENCY_HKD() { return USEFUL_CONSTANT["CURRENCY_HKD"]; }
+    /**
      * Chinese Yuan Renminbi
-     * 
+     *
      * Used in [[HKQR.setTransactionCurrency]]
      * @category Currency
      */
-    static CURRENCY_CNY: CURRENCY = "CNY";
-    /** 
+    static get CURRENCY_CNY() { return USEFUL_CONSTANT["CURRENCY_CNY"]; }
+    /**
      * Taiwan New Dollar
-     * 
+     *
      * Used in [[HKQR.setTransactionCurrency]]
      * @category Currency
      */
-    static CURRENCY_TWD: CURRENCY = "TWD";
-    /** 
+    static get CURRENCY_TWD() { return USEFUL_CONSTANT["CURRENCY_TWD"]; }
+    /**
      * United States Dollar
-     * 
+     *
      * Used in [[HKQR.setTransactionCurrency]]
      * @category Currency
      */
-    static CURRENCY_USD: CURRENCY = "USD";
+    static get CURRENCY_USD() { return USEFUL_CONSTANT["CURRENCY_USD"]; }
 
     // Common Language
-    /** 
+    /**
      * Chinese
-     * 
+     *
      * Used in [[HKQR.setLanguagePreference]]
      * @category Language
      */
-    static LANGUAGE_CHINESE: LANGUAGE = "ZH";
-    /** 
+    static get LANGUAGE_CHINESE() { return USEFUL_CONSTANT["LANGUAGE_CHINESE"]; }
+    /**
      * English
-     * 
+     *
      * Used in [[HKQR.setLanguagePreference]]
      * @category Language
      */
-    static LANGUAGE_ENGLISH: LANGUAGE = "EN";
+    static get LANGUAGE_ENGLISH() { return USEFUL_CONSTANT["LANGUAGE_ENGLISH"]; }
 
     // Common Country / Region
-    /** 
+    /**
      * Hong Kong
-     * 
+     *
      * Used in [[HKQR.setCountryCode]]
      * @category Country / Region
      */
-    static LOCATION_HONG_KONG: COUNTRY = "HK";
-    /** 
+    static get LOCATION_HONG_KONG() { return USEFUL_CONSTANT["LOCATION_HONG_KONG"]; }
+    /**
      * China
-     * 
+     *
      * Used in [[HKQR.setCountryCode]]
      * @category Country / Region
      */
-    static LOCATION_CHINA: COUNTRY = "CN";
-    /** 
+    static get LOCATION_CHINA() { return USEFUL_CONSTANT["LOCATION_CHINA"]; }
+    /**
      * Taiwan
-     * 
+     *
      * Used in [[HKQR.setCountryCode]]
      * @category Country / Region
      */
-    static LOCATION_TAIWAN: COUNTRY = "TW";
-    /** 
+    static get LOCATION_TAIWAN() { return USEFUL_CONSTANT["LOCATION_TAIWAN"]; }
+    /**
      * Macao
-     * 
+     *
      * Used in [[HKQR.setCountryCode]]
      * @category Country / Region
      */
-    static LOCATION_MACAO: COUNTRY = "MO";
-    /** 
+    static get LOCATION_MACAO() { return USEFUL_CONSTANT["LOCATION_MACAO"]; }
+    /**
      * United States of America
-     * 
+     *
      * Used in [[HKQR.setCountryCode]]
      * @category Country / Region
      */
-    static LOCATION_USA: COUNTRY = "US";
-    /** 
+    static get LOCATION_USA() { return USEFUL_CONSTANT["LOCATION_USA"]; }
+    /**
      * United Kingdom of Great Britain and Northern Ireland
-     * 
+     *
      * Used in [[HKQR.setCountryCode]]
      * @category Country / Region
      */
-    static LOCATION_UK: COUNTRY = "GB";
+    static get LOCATION_UK() { return USEFUL_CONSTANT["LOCATION_UK"]; }
 
     // Common Merchant Account
     /**
      * Fast Payment System (FPS)
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountId]]
      * @category Merchant Account ID
      */
-    static MERCHANT_ID_FPS: MERCHANT_ACCOUNTS = "26";
+    static get MERCHANT_ID_FPS() { return USEFUL_CONSTANT["MERCHANT_ID_FPS"]; }
 
     // Common FPS Merchant Unique Identifier
-    /** 
+    /**
      * Inland Revenue Department - Profits Tax
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountEmail]]
      * @category FPS Identifier
      */
-    static FPS_EMAIL_IRD_PROFITS_TAX: string = "FPS_Identifier_CRC201A@ird.gov.hk";
-    /** 
+    static get FPS_EMAIL_IRD_PROFITS_TAX() { return USEFUL_CONSTANT["FPS_EMAIL_IRD_PROFITS_TAX"]; }
+    /**
      * Inland Revenue Department - Salaries Tax
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountEmail]]
      * @category FPS Identifier
      */
-    static FPS_EMAIL_IRD_SALARIES_TAX: string = "FPS_Identifier_CRC201B@ird.gov.hk";
-    /** 
+    static get FPS_EMAIL_IRD_SALARIES_TAX() { return USEFUL_CONSTANT["FPS_EMAIL_IRD_SALARIES_TAX"]; }
+    /**
      * Inland Revenue Department - Personal Assessment
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountEmail]]
      * @category FPS Identifier
      */
-    static FPS_EMAIL_IRD_PERSONAL_ASSESSMENT: string = "FPS_Identifier_CRC201D@ird.gov.hk";
+    static get FPS_EMAIL_IRD_PERSONAL_ASSESSMENT() { return USEFUL_CONSTANT["FPS_EMAIL_IRD_PERSONAL_ASSESSMENT"]; }
+    /**
+     * Water Supplies Department
+     *
+     * Used in [[HKQR.setMerchantAccountEmail]]
+     * @category FPS Identifier
+     */
+    static get FPS_EMAIL_WSD() { return USEFUL_CONSTANT["FPS_EMAIL_WSD"]; }
 
-    /** 
+    /**
      * CLP Power Hong Kong Ltd.
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountFPSId]]
      * @category FPS Identifier
      */
-    static FPS_ID_CLP: string = "4853305";
-    /** 
+    static get FPS_ID_CLP() { return USEFUL_CONSTANT["FPS_ID_CLP"]; }
+    /**
      * Hongkong Electric Company
-     * 
+     *
      * Used in [[HKQR.setMerchantAccountFPSId]]
      * @category FPS Identifier
      */
-    static FPS_ID_HK_ELECTRIC: string = "4853305";
+    // static get FPS_ID_HK_ELECTRIC(){return USEFUL_CONSTANT["FPS_ID_HK_ELECTRIC"];}
 
     /**
      * Function to help building the resulting string
@@ -361,7 +368,7 @@ export default class HKQR implements ICODE {
 
         let data = JSON.parse(JSON.stringify(event.data as object));
         for (let id in data) {
-            if (event.isError()) continue;
+            if (event.isError()) break;
             let content = data[id];
             if (id == FORMAT_INDICATOR) {
                 // Fixed
@@ -378,7 +385,7 @@ export default class HKQR implements ICODE {
             } else if (id == TRANSACTION_CURRENCY) {
                 let currency = Object.keys(ISO_CURRENCY).filter(v => ISO_CURRENCY[v] == content);
                 if (currency.length > 0) {
-                    this.setTransactionCurrency(currency[0] as CURRENCY);
+                    this.setTransactionCurrency(currency[0] as HKQR_CURRENCY);
                 } else {
                     event.setError(`Invalid Transaction Currency (id=${id})`);
                 }
@@ -392,7 +399,7 @@ export default class HKQR implements ICODE {
                 this.setConvenienceFeePercent(content);
             } else if (id == COUNTRY_CODE) {
                 if (content in ISO_COUNTRY) {
-                    this.countryCode = content as COUNTRY;
+                    this.countryCode = content as HKQR_COUNTRY;
                 }
             } else if (id == MERCHANT_NAME) {
                 this.merchantName = content;
@@ -404,7 +411,7 @@ export default class HKQR implements ICODE {
                 this.setAdditionalInfo(content)
             } else if (id == CYCLIC_REDUNDANCY_CHECK) {
                 // Already Checked
-            } else if (MERCHANT.ACCOUNTS.indexOf(id) != -1) {
+            } else if (HKQR_MERCHANT.ACCOUNTS.indexOf(id) != -1) {
                 this.setMerchantAccount(content)
             }
         }
@@ -451,7 +458,7 @@ export default class HKQR implements ICODE {
 
         // Merchant Data
         let merchantAccount: string = "";
-        if (MERCHANT.TEMPLATE_ACCOUNTS.indexOf(this.merchantAccount) != -1) {
+        if (HKQR_MERCHANT.TEMPLATE_ACCOUNTS.indexOf(this.merchantAccount) != -1) {
             if (!this.merchantAccountInfo) {
                 event.setError("Missing Merchant Account Information");
                 return event;
@@ -625,7 +632,7 @@ export default class HKQR implements ICODE {
      */
     setMerchantAccountId(x: MERCHANT_ACCOUNTS): Event {
         let event = new Event();
-        if (MERCHANT.ACCOUNTS.indexOf(x) == -1) {
+        if (HKQR_MERCHANT.ACCOUNTS.indexOf(x) == -1) {
             event.setError("Invalid Merchant Account ID");
         } else {
             this.merchantAccount = x;
@@ -646,7 +653,7 @@ export default class HKQR implements ICODE {
      * Set country/region that the transaction take place
      * @category Merchant Information
      */
-    setCountryCode(x: COUNTRY): Event {
+    setCountryCode(x: HKQR_COUNTRY): Event {
         let event = new Event();
         if (!(x in ISO_COUNTRY)) {
             event.setError("Invalid Country Code");
@@ -710,14 +717,14 @@ export default class HKQR implements ICODE {
         }
 
         for (let id in x) {
-            if (event.isError()) continue;
+            if (event.isError()) break;
             event = this.setAlphanumericSpecial(x[id], 99);
             if (event.isError()) {
                 event.setError(`Data ${event.message}`);
             } else {
                 if (!this.merchantAccountInfo.paymentNetwork) this.merchantAccountInfo.paymentNetwork = {};
                 if (id == MERCHANT_ACCOUNT_PARTICIPANT) {
-                    if (!(x[id] in PARTICIPANT)) {
+                    if (!(x[id] in HKQR_PARTICIPANT)) {
                         event.setError("Invalid Merchant Code");
                         continue;
                     }
@@ -782,7 +789,7 @@ export default class HKQR implements ICODE {
     /**
      * Get merchant account participant code
      * @param toName Return the name of the participant
-     * 
+     *
      * @category Merchant Account
      */
     getMerchantAccountParticipantCode(toName: boolean = false): Event {
@@ -790,7 +797,7 @@ export default class HKQR implements ICODE {
         if (this?.merchantAccountInfo?.paymentNetwork && MERCHANT_ACCOUNT_PARTICIPANT in this.merchantAccountInfo.paymentNetwork) {
             event.data = this.merchantAccountInfo.paymentNetwork[MERCHANT_ACCOUNT_PARTICIPANT];
             if (toName) {
-                event.data = PARTICIPANT[event.data];
+                event.data = HKQR_PARTICIPANT[event.data];
             }
         }
         return event;
@@ -799,7 +806,7 @@ export default class HKQR implements ICODE {
      * Set merchant account participant code
      * @category Merchant Account
      */
-    setMerchantAccountParticipantCode(x: PARTICIPANTS): Event {
+    setMerchantAccountParticipantCode(x: HKQR_PARTICIPANTS): Event {
         let info: VALID_OBJECT = {};
         info[MERCHANT_ACCOUNT_PARTICIPANT] = x;
         return this.setMerchantAccount(info);
@@ -973,7 +980,7 @@ export default class HKQR implements ICODE {
     /**
      * Get merchant category code
      * @param toName Return the name of the merchant category
-     * 
+     *
      * @category Merchant Information
      */
     getMerchantCategory(toName: boolean = false): Event {
@@ -1001,7 +1008,7 @@ export default class HKQR implements ICODE {
     /**
      * Get transaction currency code
      * @param toCode Get the 3-digit number code instead
-     * 
+     *
      * @category Transaction Data
      */
     getTransactionCurrency(toCode: boolean = false): Event {
@@ -1018,7 +1025,8 @@ export default class HKQR implements ICODE {
      * Will be converted to number in [[HKQR.generate]]
      * @category Transaction Data
      */
-    setTransactionCurrency(x: CURRENCY): Event {
+    setTransactionCurrency(x: HKQR_CURRENCY): Event {
+        x = x.toUpperCase() as HKQR_CURRENCY;
         let event = new Event();
         if (!(x in ISO_CURRENCY)) {
             event.setError("Invalid Currency Code");
@@ -1026,13 +1034,13 @@ export default class HKQR implements ICODE {
             this.transactionCurrency = x;
 
         }
-        return new Event();
+        return event;
     }
 
     /**
      * Get transaction amount
      * @param toNumber Convert number string to number
-     * 
+     *
      * @category Transaction Data
      */
     getTransactionAmount(toNumber: boolean = false): Event {
@@ -1060,7 +1068,7 @@ export default class HKQR implements ICODE {
     /**
      * Get convenience fee amount (transaction cost or tips)
      * @param toNumber Convert number string to number
-     * 
+     *
      * @category Transaction Data
      */
     getConvenienceFeeAmount(toNumber: boolean = false): Event {
@@ -1091,7 +1099,7 @@ export default class HKQR implements ICODE {
     /**
      * Get convenience fee percent (transaction cost or tips)
      * @param toNumber Convert number string to number
-     * 
+     *
      * @category Transaction Data
      */
     getConvenienceFeePercent(toNumber: boolean = false): Event {
@@ -1507,12 +1515,12 @@ export default class HKQR implements ICODE {
      */
     setMerchantInfo(x: VALID_OBJECT): Event {
         let event = new Event(),
-            language: LANGUAGE,
+            language: HKQR_LANGUAGE,
             merchantName: string;
 
         if (MERCHANT_INFO_LANGUAGE in x) {
             if (x[MERCHANT_INFO_LANGUAGE] in ISO_LANGUAGE) {
-                language = x[MERCHANT_INFO_LANGUAGE] as LANGUAGE;
+                language = x[MERCHANT_INFO_LANGUAGE] as HKQR_LANGUAGE;
             } else {
                 event.setError("Invalid Language Preference");
                 return event;
@@ -1552,7 +1560,7 @@ export default class HKQR implements ICODE {
         }
 
         for (let id in x) {
-            if (event.isError()) continue
+            if (event.isError()) break;
             if (id == MERCHANT_INFO_CITY) {
                 event = this.setAlphanumericSpecial(x[id], 15);
                 if (event.isError()) {
@@ -1588,7 +1596,7 @@ export default class HKQR implements ICODE {
      * Set the language of localized information
      * @category Merchant Information
      */
-    setLanguagePreference(x: LANGUAGE): Event {
+    setLanguagePreference(x: HKQR_LANGUAGE): Event {
         let info: VALID_OBJECT = {};
         info[MERCHANT_INFO_LANGUAGE] = x;
         return this.setMerchantInfo(info);

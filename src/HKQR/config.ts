@@ -12,8 +12,8 @@ export const ISO_COUNTRY = ISO_COUNTRIES;
 export const ISO_CURRENCY = ISO_CURRENCIES;
 export const ISO_LANGUAGE = ISO_LANGUAGES;
 export const ISO_MERCHANT_CATEGORY = ISO_MERCHANT_CATEGORIES;
-export const MERCHANT = LIST_MERCHANTS;
-export const PARTICIPANT = LIST_PARTICIPANTS;
+export const HKQR_MERCHANT = LIST_MERCHANTS;
+export const HKQR_PARTICIPANT = LIST_PARTICIPANTS;
 
 export type VALID_ID = "00" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "25" | "26" | "27" | "28" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "39" | "40" | "41" | "42" | "43" | "44" | "45" | "46" | "47" | "48" | "49" | "50" | "51" | "52" | "53" | "54" | "55" | "56" | "57" | "58" | "59" | "60" | "61" | "62" | "63" | "64" | "65" | "66" | "67" | "68" | "69" | "70" | "71" | "72" | "73" | "74" | "75" | "76" | "77" | "78" | "79" | "80" | "81" | "82" | "83" | "84" | "85" | "86" | "87" | "88" | "89" | "90" | "91" | "92" | "93" | "94" | "95" | "96" | "97" | "98" | "99";
 export type VALID_OBJECT = {
@@ -21,33 +21,33 @@ export type VALID_OBJECT = {
 }
 
 // Merchant Accounts | ID: [02..51]
-export type MERCHANT_ACCOUNT_VISA = typeof MERCHANT.ACCOUNT_VISA[number];
-export type MERCHANT_ACCOUNT_MASTER = typeof MERCHANT.ACCOUNT_MASTER[number];
-export type MERCHANT_ACCOUNT_EMVCO = typeof MERCHANT.ACCOUNT_EMVCO[number];
-export type MERCHANT_ACCOUNT_DISCOVER = typeof MERCHANT.ACCOUNT_DISCOVER[number];
-export type MERCHANT_ACCOUNT_AMEX = typeof MERCHANT.ACCOUNT_AMEX[number];
-export type MERCHANT_ACCOUNT_JCB = typeof MERCHANT.ACCOUNT_JCB[number];
-export type MERCHANT_ACCOUNT_UNION = typeof MERCHANT.ACCOUNT_UNION[number];
-export type MERCHANT_ACCOUNT_FPS = typeof MERCHANT.ACCOUNT_FPS[number];
-export type MERCHANT_ACCOUNT_WG = typeof MERCHANT.ACCOUNT_WG[number];
-export type MERCHANT_ACCOUNT_PO = typeof MERCHANT.ACCOUNT_PO[number];
+export type MERCHANT_ACCOUNT_VISA = typeof HKQR_MERCHANT.ACCOUNT_VISA[number];
+export type MERCHANT_ACCOUNT_MASTER = typeof HKQR_MERCHANT.ACCOUNT_MASTER[number];
+export type MERCHANT_ACCOUNT_EMVCO = typeof HKQR_MERCHANT.ACCOUNT_EMVCO[number];
+export type MERCHANT_ACCOUNT_DISCOVER = typeof HKQR_MERCHANT.ACCOUNT_DISCOVER[number];
+export type MERCHANT_ACCOUNT_AMEX = typeof HKQR_MERCHANT.ACCOUNT_AMEX[number];
+export type MERCHANT_ACCOUNT_JCB = typeof HKQR_MERCHANT.ACCOUNT_JCB[number];
+export type MERCHANT_ACCOUNT_UNION = typeof HKQR_MERCHANT.ACCOUNT_UNION[number];
+export type MERCHANT_ACCOUNT_FPS = typeof HKQR_MERCHANT.ACCOUNT_FPS[number];
+export type MERCHANT_ACCOUNT_WG = typeof HKQR_MERCHANT.ACCOUNT_WG[number];
+export type MERCHANT_ACCOUNT_PO = typeof HKQR_MERCHANT.ACCOUNT_PO[number];
 export type MERCHANT_ACCOUNTS = MERCHANT_ACCOUNT_VISA | MERCHANT_ACCOUNT_MASTER | MERCHANT_ACCOUNT_EMVCO | MERCHANT_ACCOUNT_DISCOVER | MERCHANT_ACCOUNT_AMEX | MERCHANT_ACCOUNT_JCB | MERCHANT_ACCOUNT_UNION | MERCHANT_ACCOUNT_FPS | MERCHANT_ACCOUNT_WG | MERCHANT_ACCOUNT_PO;
 
 // ISO Data
-export type COUNTRY = keyof typeof ISO_COUNTRY;
-export type CURRENCY = keyof typeof ISO_CURRENCY;
-export type LANGUAGE = keyof typeof ISO_LANGUAGE;
+export type HKQR_COUNTRY = keyof typeof ISO_COUNTRY;
+export type HKQR_CURRENCY = keyof typeof ISO_CURRENCY;
+export type HKQR_LANGUAGE = keyof typeof ISO_LANGUAGE;
 export type MERCHANT_CATEGORY = keyof typeof ISO_MERCHANT_CATEGORIES;
-export type PARTICIPANTS = keyof typeof PARTICIPANT;
+export type HKQR_PARTICIPANTS = keyof typeof HKQR_PARTICIPANT;
 
 export type MERCHANT_INFO = {
-    language: LANGUAGE; // ID: 00
+    language: HKQR_LANGUAGE; // ID: 00
     merchantName: string; // ID: 01
     merchantCity?: string; // ID: 02
     extra?: VALID_OBJECT; // ID: [03..99]
 };
 
-export interface ICODE {
+export interface IHKQR_CODE {
     parse(x: string): Event;
     extract(x: string): Event;
     generate(): Event;
@@ -57,13 +57,13 @@ export interface ICODE {
     getMerchantAccountId(): Event;
     setMerchantAccountId(x: MERCHANT_ACCOUNTS): Event;
     getCountryCode(): Event;
-    setCountryCode(x: COUNTRY): Event;
+    setCountryCode(x: HKQR_COUNTRY): Event;
     getMerchantAccount(): Event;
     setMerchantAccount(x: VALID_OBJECT): Event;
     getUniqueIdentifier(): Event;
     setUniqueIdentifier(x: string): Event;
     getMerchantAccountParticipantCode(toName: boolean): Event;
-    setMerchantAccountParticipantCode(x: PARTICIPANTS): Event;
+    setMerchantAccountParticipantCode(x: HKQR_PARTICIPANTS): Event;
     getMerchantAccountFPSId(): Event;
     setMerchantAccountFPSId(x: number | string): Event;
     getMerchantAccountMobile(): Event;
@@ -81,7 +81,7 @@ export interface ICODE {
     getMerchantCategory(toName: boolean): Event;
     setMerchantCategory(x: MERCHANT_CATEGORY): Event;
     getTransactionCurrency(toCode: boolean): Event;
-    setTransactionCurrency(x: CURRENCY): Event;
+    setTransactionCurrency(x: HKQR_CURRENCY): Event;
     getTransactionAmount(toNumber: boolean): Event;
     setTransactionAmount(x: number | string, fraction: number | boolean): Event;
     getConvenienceFeeAmount(toNumber: boolean): Event;
@@ -113,7 +113,7 @@ export interface ICODE {
     getMerchantInfo(): Event;
     setMerchantInfo(x: VALID_OBJECT): Event;
     getLanguagePreference(): Event;
-    setLanguagePreference(x: LANGUAGE): Event;
+    setLanguagePreference(x: HKQR_LANGUAGE): Event;
     getLocalizedMerchantName(): Event;
     setLocalizedMerchantName(x: string): Event;
     getLocalizedMerchantCity(): Event;

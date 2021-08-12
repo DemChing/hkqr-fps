@@ -5,8 +5,15 @@
         "target": "es6",
         "moduleResolution": "node",
         "sourceMap": true,
+        "declaration": true,
         "outDir": "dist/cjs"
     },
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "node_modules"
+    ],
     "lib": [
         "es2015"
     ]

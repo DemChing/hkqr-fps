@@ -5,10 +5,10 @@ import crc16 from "../lib/crc";
 import { extract, isAlphanumericSpecial, numberToValidId } from "../lib/utils";
 
 // Import data
-import { CURRENCY, PARTICIPANT, PARTICIPANTS } from "./config";
+import { FPS_CURRENCY, FPS_PARTICIPANT, FPS_PARTICIPANTS, FPS_MERCHANT } from "./config";
 
 // Import constants for Main ID
-import { FORMAT_INDICATOR, INITIATION_POINT, MERCHANT_CATEGORY_CODE, TRANSACTION_CURRENCY, TRANSACTION_AMOUNT, COUNTRY_CODE, MERCHANT_NAME, MERCHANT_CITY, ADDITIONAL_INFORMATION, CYCLIC_REDUNDANCY_CHECK } from "../lib/constant";
+import { FORMAT_INDICATOR, INITIATION_POINT, MERCHANT_CATEGORY_CODE, TRANSACTION_CURRENCY, TRANSACTION_AMOUNT, COUNTRY_CODE, MERCHANT_NAME, MERCHANT_CITY, ADDITIONAL_INFORMATION, CYCLIC_REDUNDANCY_CHECK, USEFUL_CONSTANT } from "../lib/constant";
 
 // Import constants for Sub ID or other value
 import { STATIC_QR_CODE, DYNAMIC_QR_CODE, MERCHANT_ACCOUNT_UNIQUE, MERCHANT_ACCOUNT_PARTICIPANT, MERCHANT_ACCOUNT_IDENTIFIER_FPS, MERCHANT_ACCOUNT_IDENTIFIER_MOBILE, MERCHANT_ACCOUNT_IDENTIFIER_EMAIL, MERCHANT_INFO_NAME, ADDITIONAL_INFO_BILL, ADDITIONAL_INFO_REFERENCE } from "../lib/constant";
@@ -16,20 +16,20 @@ import { STATIC_QR_CODE, DYNAMIC_QR_CODE, MERCHANT_ACCOUNT_UNIQUE, MERCHANT_ACCO
 // Import types
 import { VALID_ID, VALID_OBJECT, POINT_OF_INITIATION, MERCHANT_ACCOUNT_INFO, ADDITIONAL_INFO } from "../lib/constant";
 
-import { ICODE } from "./config";
+import { IFPS_CODE } from "./config";
 
 /**
  * Simplified class contains some functions from the main class
- * 
+ *
  * Already meet the requirements of daily transaction for FPS
  */
-export default class FPS implements ICODE {
+export default class FPS implements IFPS_CODE {
     /** @category Format Indicator */
     private formatIndicator?: string = "01"; // ID: 00 // Fixed
     /** @category Point of Initiation */
     private initiationPoint?: POINT_OF_INITIATION = "11"; // ID: 01
     /** @category Merchant Account */
-    private merchantAccount?: VALID_ID = "26"; // ID: 26 // FPS
+    private merchantAccount?: FPS_MERCHANT = "26"; // ID: 26 // FPS
     /** @category Merchant Account */
     private merchantAccountInfo?: MERCHANT_ACCOUNT_INFO = {
         uniqueIdentifier: "hk.com.hkicl"
@@ -37,7 +37,7 @@ export default class FPS implements ICODE {
     /** @category Merchant Information */
     private merchantCategory: string = "0000"; // ID: 52 // 0000 is Dummy value
     /** @category Transaction Data */
-    private transactionCurrency: CURRENCY = "HKD"; // ID: 53
+    private transactionCurrency: FPS_CURRENCY = "HKD"; // ID: 53
     /** @category Transaction Data */
     private transactionAmount?: string; // ID: 54
     /** @category Merchant Information */
@@ -62,165 +62,165 @@ export default class FPS implements ICODE {
     // Common Bank Participants
     /**
      * Standard Chartered Bank (Hong Kong) Limited
-     * 
+     *
      * Used in [[FPS.setBank]]
      * @category Bank Participant
      */
-    static BANK_STANDARD_CHARTERED: PARTICIPANTS = "003";
+    static get BANK_STANDARD_CHARTERED() { return USEFUL_CONSTANT["BANK_STANDARD_CHARTERED"]; }
     /**
      * The Hongkong and Shanghai Banking Corporation Limited
-     * 
+     *
      * Used in [[FPS.setBank]]
      * @category Bank Participant
      */
-    static BANK_HSBC: PARTICIPANTS = "004";
+    static get BANK_HSBC() { return USEFUL_CONSTANT["BANK_HSBC"]; }
     /**
      * Bank of China (Hong Kong) Limited
-     * 
+     *
      * Used in [[FPS.setBank]]
      * @category Bank Participant
      */
-    static BANK_BANK_OF_CHINA: PARTICIPANTS = "012";
+    static get BANK_BANK_OF_CHINA() { return USEFUL_CONSTANT["BANK_BANK_OF_CHINA"]; }
     /**
      * The Bank of East Asia, Limited
-     * 
+     *
      * Used in [[FPS.setBank]]
      * @category Bank Participant
      */
-    static BANK_EAST_ASIA: PARTICIPANTS = "015";
+    static get BANK_EAST_ASIA() { return USEFUL_CONSTANT["BANK_EAST_ASIA"]; }
     /**
      * DBS Bank (Hong Kong) Ltd.
-     * 
+     *
      * Used in [[FPS.setBank]]
      * @category Bank Participant
      */
-    static BANK_DBS: PARTICIPANTS = "016";
+    static get BANK_DBS() { return USEFUL_CONSTANT["BANK_DBS"]; }
     /**
      * Hang Seng Bank Ltd.
-     * 
+     *
      * Used in [[FPS.setBank]]
      * @category Bank Participant
      */
-    static BANK_HANG_SANG: PARTICIPANTS = "024";
+    static get BANK_HANG_SANG() { return USEFUL_CONSTANT["BANK_HANG_SANG"]; }
     /**
      * Citibank (Hong Kong) Limited
-     * 
+     *
      * Used in [[FPS.setBank]]
      * @category Bank Participant
      */
-    static BANK_CITIBANK: PARTICIPANTS = "250";
+    static get BANK_CITIBANK() { return USEFUL_CONSTANT["BANK_CITIBANK"]; }
 
     // Common SVF Participants
-    /** 
+    /**
      * WeChat Pay Hong Kong Limited
-     * 
+     *
      * Used in [[FPS.setBank]]
      * @category SVF Participant
      */
-    static BANK_WECHAT: PARTICIPANTS = "931";
+    static get BANK_WECHAT() { return USEFUL_CONSTANT["BANK_WECHAT"]; }
     /**
      * HKT Payment Limited
-     * 
+     *
      * Used in [[FPS.setBank]]
      * @category SVF Participant
      */
-    static BANK_TAP_N_GO: PARTICIPANTS = "935";
+    static get BANK_TAP_N_GO() { return USEFUL_CONSTANT["BANK_TAP_N_GO"]; }
     /**
      * TNG (Asia) Limited
-     * 
+     *
      * Used in [[FPS.setBank]]
      * @category SVF Participant
      */
-    static BANK_TNG: PARTICIPANTS = "947";
+    static get BANK_TNG() { return USEFUL_CONSTANT["BANK_TNG"]; }
     /**
      * Alipay Financial Services (HK) Limited
-     * 
+     *
      * Used in [[FPS.setBank]]
      * @category SVF Participant
      */
-    static BANK_ALIPAY: PARTICIPANTS = "948";
+    static get BANK_ALIPAY() { return USEFUL_CONSTANT["BANK_ALIPAY"]; }
     /**
      * Octopus Cards Limited
-     * 
+     *
      * Used in [[FPS.setBank]]
      * @category SVF Participant
      */
-    static BANK_OCTOPUS: PARTICIPANTS = "949";
+    static get BANK_OCTOPUS() { return USEFUL_CONSTANT["BANK_OCTOPUS"]; }
     /**
      * PayMe
-     * 
+     *
      * Used in [[FPS.setBank]]
      * @category SVF Participant
      */
-    static BANK_PAYME: PARTICIPANTS = "954";
+    static get BANK_PAYME() { return USEFUL_CONSTANT["BANK_PAYME"]; }
 
     // Common Currency Code
-    /** 
+    /**
      * Hong Kong Dollar
-     * 
+     *
      * Used in [[FPS.setCurrency]]
      * @category Currency
      */
-    static CURRENCY_HKD: CURRENCY = "HKD";
-    /** 
+    static get CURRENCY_HKD() { return USEFUL_CONSTANT["CURRENCY_HKD"]; }
+    /**
      * Chinese Yuan Renminbi
-     * 
+     *
      * Used in [[FPS.setCurrency]]
      * @category Currency
      */
-    static CURRENCY_CNY: CURRENCY = "CNY";
-    /** 
+    static get CURRENCY_CNY() { return USEFUL_CONSTANT["CURRENCY_CNY"]; }
+    /**
      * Taiwan New Dollar
-     * 
+     *
      * Used in [[FPS.setCurrency]]
      * @category Currency
      */
-    static CURRENCY_TWD: CURRENCY = "TWD";
-    /** 
+    static get CURRENCY_TWD() { return USEFUL_CONSTANT["CURRENCY_TWD"]; }
+    /**
      * United States Dollar
-     * 
+     *
      * Used in [[FPS.setCurrency]]
      * @category Currency
      */
-    static CURRENCY_USD: CURRENCY = "USD";
+    static get CURRENCY_USD() { return USEFUL_CONSTANT["CURRENCY_USD"]; }
 
     // Common FPS Merchant Unique Identifier
-    /** 
+    /**
      * Inland Revenue Department - Profits Tax
-     * 
+     *
      * Used in [[FPS.setEmail]]
      * @category FPS Identifier
      */
-    static FPS_EMAIL_IRD_PROFITS_TAX: string = "FPS_Identifier_CRC201A@ird.gov.hk";
-    /** 
+    static get FPS_EMAIL_IRD_PROFITS_TAX() { return USEFUL_CONSTANT["FPS_EMAIL_IRD_PROFITS_TAX"]; }
+    /**
      * Inland Revenue Department - Salaries Tax
-     * 
+     *
      * Used in [[FPS.setEmail]]
      * @category FPS Identifier
      */
-    static FPS_EMAIL_IRD_SALARIES_TAX: string = "FPS_Identifier_CRC201B@ird.gov.hk";
-    /** 
+    static get FPS_EMAIL_IRD_SALARIES_TAX() { return USEFUL_CONSTANT["FPS_EMAIL_IRD_SALARIES_TAX"]; }
+    /**
      * Inland Revenue Department - Personal Assessment
-     * 
+     *
      * Used in [[FPS.setEmail]]
      * @category FPS Identifier
      */
-    static FPS_EMAIL_IRD_PERSONAL_ASSESSMENT: string = "FPS_Identifier_CRC201D@ird.gov.hk";
+    static get FPS_EMAIL_IRD_PERSONAL_ASSESSMENT() { return USEFUL_CONSTANT["FPS_EMAIL_IRD_PERSONAL_ASSESSMENT"]; }
 
-    /** 
+    /**
      * CLP Power Hong Kong Ltd.
-     * 
+     *
      * Used in [[FPS.setFPSId]]
      * @category FPS Identifier
      */
-    static FPS_ID_CLP: string = "4853305";
-    /** 
+    static get FPS_ID_CLP() { return USEFUL_CONSTANT["FPS_ID_CLP"]; }
+    /**
      * Hongkong Electric Company
-     * 
+     *
      * Used in [[FPS.setFPSId]]
      * @category FPS Identifier
      */
-    static FPS_ID_HK_ELECTRIC: string = "4853305";
+    // static get FPS_ID_HK_ELECTRIC(){return USEFUL_CONSTANT["FPS_ID_HK_ELECTRIC"];}
 
     /**
      * Function to help building the resulting string
@@ -285,7 +285,7 @@ export default class FPS implements ICODE {
 
         let data = JSON.parse(JSON.stringify(event.data as object));
         for (let id in data) {
-            if (event.isError()) continue;
+            if (event.isError()) break;
             let content = data[id];
             if (id == FORMAT_INDICATOR) {
                 // Fixed
@@ -296,9 +296,9 @@ export default class FPS implements ICODE {
                     event.setError(`Invalid Initiation Point (id=${id})`);
                 }
             } else if (id == TRANSACTION_CURRENCY) {
-                let currency = Object.keys(CURRENCY).filter(v => CURRENCY[v] == content);
+                let currency = Object.keys(FPS_CURRENCY).filter(v => FPS_CURRENCY[v] == content);
                 if (currency.length > 0) {
-                    this.setCurrency(currency[0] as CURRENCY);
+                    this.setCurrency(currency[0] as FPS_CURRENCY);
                 } else {
                     event.setError(`Invalid Transaction Currency (id=${id})`);
                 }
@@ -382,7 +382,7 @@ export default class FPS implements ICODE {
         code += this.payload(MERCHANT_CATEGORY_CODE, this.merchantCategory);
 
         // Transaction Data
-        code += this.payload(TRANSACTION_CURRENCY, CURRENCY[this.transactionCurrency]);
+        code += this.payload(TRANSACTION_CURRENCY, FPS_CURRENCY[this.transactionCurrency]);
         if (this.transactionAmount && parseFloat(this.transactionAmount) > 0) {
             code += this.payload(TRANSACTION_AMOUNT, this.transactionAmount);
         }
@@ -450,7 +450,7 @@ export default class FPS implements ICODE {
     setMerchantAccount(x: VALID_OBJECT): Event {
         let event = new Event();
         for (let id in x) {
-            if (event.isError()) continue;
+            if (event.isError()) break;
             event = this.setAlphanumericSpecial(x[id], 99);
             if (event.isError()) {
                 event.setError(`Data ${event.message}`);
@@ -458,7 +458,7 @@ export default class FPS implements ICODE {
                 if (!this.merchantAccountInfo.paymentNetwork) this.merchantAccountInfo.paymentNetwork = {};
                 if (id == MERCHANT_ACCOUNT_UNIQUE) continue;
                 if (id == MERCHANT_ACCOUNT_PARTICIPANT) {
-                    if (!(x[id] in PARTICIPANT)) {
+                    if (!(x[id] in FPS_PARTICIPANT)) {
                         event.setError("Invalid Merchant Code");
                         continue;
                     }
@@ -497,7 +497,7 @@ export default class FPS implements ICODE {
     /**
      * Get merchant account participant code
      * @param toName Return the name of the participant
-     * 
+     *
      * @category Merchant Account
      */
     getBank(toName: boolean = false): Event {
@@ -505,7 +505,7 @@ export default class FPS implements ICODE {
         if (this?.merchantAccountInfo?.paymentNetwork && MERCHANT_ACCOUNT_PARTICIPANT in this.merchantAccountInfo.paymentNetwork) {
             event.data = this.merchantAccountInfo.paymentNetwork[MERCHANT_ACCOUNT_PARTICIPANT];
             if (toName) {
-                event.data = PARTICIPANT[event.data];
+                event.data = FPS_PARTICIPANT[event.data];
             }
         }
         return event;
@@ -514,7 +514,7 @@ export default class FPS implements ICODE {
      * Set merchant account participant code
      * @category Merchant Account
      */
-    setBank(x: PARTICIPANTS): Event {
+    setBank(x: FPS_PARTICIPANTS): Event {
         let info: VALID_OBJECT = {};
         info[MERCHANT_ACCOUNT_PARTICIPANT] = x;
         return this.setMerchantAccount(info);
@@ -535,7 +535,7 @@ export default class FPS implements ICODE {
      * Set merchant account identifier - FPS ID
      *
      * Set either one among these functions [[FPS.getFPSId]], [[FPS.setMobile]], [[FPS.setEmail]]
-     * 
+     *
      * @category Merchant Account
      */
     setFPSId(x: number | string): Event {
@@ -562,7 +562,7 @@ export default class FPS implements ICODE {
      * Set merchant account identifier - Mobile Number
      *
      * Set either one among these functions [[FPS.getFPSId]], [[FPS.setMobile]], [[FPS.setEmail]]
-     * 
+     *
      * @category Merchant Account
      */
     setMobile(x: number | string): Event {
@@ -589,7 +589,7 @@ export default class FPS implements ICODE {
      * Set merchant account identifier - Email
      *
      * Set either one among these functions [[FPS.getFPSId]], [[FPS.setMobile]], [[FPS.setEmail]]
-     * 
+     *
      * @category Merchant Account
      */
     setEmail(x: string): Event {
@@ -601,7 +601,7 @@ export default class FPS implements ICODE {
     /**
      * Get transaction amount
      * @param toNumber Convert number string to number
-     * 
+     *
      * @category Transaction Data
      */
     getAmount(toNumber: boolean = false): Event {
@@ -724,14 +724,14 @@ export default class FPS implements ICODE {
     /**
      * Get transaction currency code
      * @param toCode Get the 3-digit number code instead
-     * 
+     *
      * @category Transaction Data
      */
     getCurrency(toCode: boolean = false): Event {
         let event = new Event;
         event.data = this.transactionCurrency;
         if (toCode) {
-            event.data = CURRENCY[event.data];
+            event.data = FPS_CURRENCY[event.data];
         }
         return event;
     }
@@ -739,18 +739,19 @@ export default class FPS implements ICODE {
      * Set transaction currency code
      *
      * Will be converted to number code in [[FPS.generate]]
-     * 
+     *
      * @category Transaction Data
      */
-    setCurrency(x: CURRENCY): Event {
+    setCurrency(x: FPS_CURRENCY): Event {
+        x = x.toUpperCase() as FPS_CURRENCY;
         let event = new Event();
-        if (!(x in CURRENCY)) {
+        if (!(x in FPS_CURRENCY)) {
             event.setError("Invalid Currency Code");
         } else {
             this.transactionCurrency = x;
 
         }
-        return new Event();
+        return event;
     }
 }
 

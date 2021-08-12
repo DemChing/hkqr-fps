@@ -1,4 +1,9 @@
 {
-    "mode": "modules",
+    "readme": "none",
+    "disableOutputCheck": true,
+    "entryPoints": [
+        "src/HKQR",
+        "src/FPS"
+    ],
     "out": "docs"
 }
