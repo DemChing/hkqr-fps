@@ -4,7 +4,7 @@ let silent = false;
 /**
  * Default response for most of the functions
  */
-export default class Event {
+class Response {
     private error: boolean = false;
     data?: string | number | object = "Success";
     message?: string;
@@ -33,3 +33,5 @@ export default class Event {
         }
     }
 }
+
+export default Response;

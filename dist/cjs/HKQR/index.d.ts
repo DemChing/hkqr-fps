@@ -1,5 +1,5 @@
-import Event from "../lib/event";
-import { MERCHANT_ACCOUNTS, HKQR_COUNTRY, HKQR_CURRENCY, HKQR_LANGUAGE, MERCHANT_CATEGORY, HKQR_PARTICIPANTS } from "./config";
+import Response from "../lib/event";
+import { MERCHANT_ACCOUNTS, HKQR_COUNTRY, HKQR_CURRENCY, HKQR_LANGUAGE, HKQR_MERCHANT_CATEGORY, HKQR_PARTICIPANTS } from "./config";
 import { VALID_ID, VALID_OBJECT, POINT_OF_INITIATION } from "../lib/constant";
 import { IHKQR_CODE } from "./config";
 /**
@@ -277,28 +277,28 @@ export default class HKQR implements IHKQR_CODE {
      * @param x Source string
      * @param length Maximum length available
      */
-    setAlphanumericSpecial(x: string, length: number): Event;
+    setAlphanumericSpecial(x: string, length: number): Response;
     /**
      * Function to validate a string or number as a valid numeric string
      * @param x Source string or number
      * @param fraction Force the number to be converted in fixed-point notation (i.e. `x.toFixed(fraction)`)
      * @param limit Maximum length available
      */
-    setNumeric(x: number | string, fraction?: number | boolean, limit?: number): Event;
+    setNumeric(x: number | string, fraction?: number | boolean, limit?: number): Response;
     /**
      * Extract and parse data from plaintext
      * @param x Plaintext decoded from QR code
      */
-    parse(x: string): Event;
+    parse(x: string): Response;
     /**
      * Extract data from plaintext
      * @param x Plaintext decoded from QR code
      */
-    extract(x?: string): Event;
+    extract(x?: string): Response;
     /**
      * Generate resulting string for QR code
      */
-    generate(): Event;
+    generate(): Response;
     /**
      * Check if it is a static QR Code
      * @category Point of Initiation
@@ -308,47 +308,47 @@ export default class HKQR implements IHKQR_CODE {
      * Get setting
      * @category Point of Initiation
      */
-    getInitiationPoint(): Event;
+    getInitiationPoint(): Response;
     /**
      * Update current setting
      * @category Point of Initiation
      */
-    setInitiationPoint(x: POINT_OF_INITIATION): Event;
+    setInitiationPoint(x: POINT_OF_INITIATION): Response;
     /**
      * Get merchant ID
      * @category Merchant Account
      */
-    getMerchantAccountId(): Event;
+    getMerchantAccountId(): Response;
     /**
      * Set merchant ID
      * @category Merchant Account
      */
-    setMerchantAccountId(x: MERCHANT_ACCOUNTS): Event;
+    setMerchantAccountId(x: MERCHANT_ACCOUNTS): Response;
     /**
      * Get country/region that the transaction take place
      * @category Merchant Information
      */
-    getCountryCode(): Event;
+    getCountryCode(): Response;
     /**
      * Set country/region that the transaction take place
      * @category Merchant Information
      */
-    setCountryCode(x: HKQR_COUNTRY): Event;
+    setCountryCode(x: HKQR_COUNTRY): Response;
     /**
      * Get merchant account data
      * @category Merchant Account
      */
-    getMerchantAccount(): Event;
+    getMerchantAccount(): Response;
     /**
      * Set merchant account data
      * @category Merchant Account
      */
-    setMerchantAccount(x: VALID_OBJECT): Event;
+    setMerchantAccount(x: VALID_OBJECT): Response;
     /**
      * Get unique identifier of the payment operator
      * @category Merchant Account
      */
-    getUniqueIdentifier(): Event;
+    getUniqueIdentifier(): Response;
     /**
      * Set unique identifier of the payment operator
      *
@@ -358,319 +358,319 @@ export default class HKQR implements IHKQR_CODE {
      *
      * @category Merchant Account
      */
-    setUniqueIdentifier(x: string): Event;
+    setUniqueIdentifier(x: string): Response;
     /**
      * Get merchant account participant code
      * @param toName Return the name of the participant
      *
      * @category Merchant Account
      */
-    getMerchantAccountParticipantCode(toName?: boolean): Event;
+    getMerchantAccountParticipantCode(toName?: boolean): Response;
     /**
      * Set merchant account participant code
      * @category Merchant Account
      */
-    setMerchantAccountParticipantCode(x: HKQR_PARTICIPANTS): Event;
+    setMerchantAccountParticipantCode(x: HKQR_PARTICIPANTS): Response;
     /**
      * Get merchant account identifier - FPS ID
      * @category Merchant Account
      */
-    getMerchantAccountFPSId(): Event;
+    getMerchantAccountFPSId(): Response;
     /**
      * Set merchant account identifier - FPS ID
      *
      * Set either one among these functions [[HKQR.setMerchantAccountFPSId]], [[HKQR.setMerchantAccountMobile]], [[HKQR.setMerchantAccountEmail]]
      * @category Merchant Account
      */
-    setMerchantAccountFPSId(x: number | string): Event;
+    setMerchantAccountFPSId(x: number | string): Response;
     /**
      * Get merchant account identifier - Mobile Number
      * @category Merchant Account
      */
-    getMerchantAccountMobile(): Event;
+    getMerchantAccountMobile(): Response;
     /**
      * Set merchant account identifier - Mobile Number
      *
      * Set either one among these functions [[HKQR.setMerchantAccountFPSId]], [[HKQR.setMerchantAccountMobile]], [[HKQR.setMerchantAccountEmail]]
      * @category Merchant Account
      */
-    setMerchantAccountMobile(x: number | string): Event;
+    setMerchantAccountMobile(x: number | string): Response;
     /**
      * Get merchant account identifier - Email
      * @category Merchant Account
      */
-    getMerchantAccountEmail(): Event;
+    getMerchantAccountEmail(): Response;
     /**
      * Set merchant account identifier - Email
      *
      * Set either one among these functions [[HKQR.setMerchantAccountFPSId]], [[HKQR.setMerchantAccountMobile]], [[HKQR.setMerchantAccountEmail]]
      * @category Merchant Account
      */
-    setMerchantAccountEmail(x: string): Event;
+    setMerchantAccountEmail(x: string): Response;
     /**
      * Get merchant account data
      * @category Merchant Account
      */
-    getPaymentNetwork(): Event;
+    getPaymentNetwork(): Response;
     /**
      * Set merchant account data by ID
      * @category Merchant Account
      */
-    setPaymentNetwork(id: VALID_ID, x: string): Event;
+    setPaymentNetwork(id: VALID_ID, x: string): Response;
     /**
      * Get merchant name
      * @category Merchant Information
      */
-    getMerchantName(): Event;
+    getMerchantName(): Response;
     /**
      * Set merchant name
      * @category Merchant Information
      */
-    setMerchantName(x: string): Event;
+    setMerchantName(x: string): Response;
     /**
      * Get physical location of the merchant
      * @category Merchant Information
      */
-    getMerchantCity(): Event;
+    getMerchantCity(): Response;
     /**
      * Set physical location of the merchant
      * @category Merchant Information
      */
-    setMerchantCity(x: string): Event;
+    setMerchantCity(x: string): Response;
     /**
      * Get postal code of the merchant
      * @category Merchant Information
      */
-    getPostalCode(): Event;
+    getPostalCode(): Response;
     /**
      * Set postal code of the merchant
      * @category Merchant Information
      */
-    setPostalCode(x: string): Event;
+    setPostalCode(x: string): Response;
     /**
      * Get merchant category code
      * @param toName Return the name of the merchant category
      *
      * @category Merchant Information
      */
-    getMerchantCategory(toName?: boolean): Event;
+    getMerchantCategory(toName?: boolean): Response;
     /**
      * Set merchant category code. `0000` if not applicable.
      * @category Merchant Information
      */
-    setMerchantCategory(x: MERCHANT_CATEGORY): Event;
+    setMerchantCategory(x: HKQR_MERCHANT_CATEGORY): Response;
     /**
      * Get transaction currency code
      * @param toCode Get the 3-digit number code instead
      *
      * @category Transaction Data
      */
-    getTransactionCurrency(toCode?: boolean): Event;
+    getTransactionCurrency(toCode?: boolean): Response;
     /**
      * Set transaction currency code
      *
      * Will be converted to number in [[HKQR.generate]]
      * @category Transaction Data
      */
-    setTransactionCurrency(x: HKQR_CURRENCY): Event;
+    setTransactionCurrency(x: HKQR_CURRENCY): Response;
     /**
      * Get transaction amount
      * @param toNumber Convert number string to number
      *
      * @category Transaction Data
      */
-    getTransactionAmount(toNumber?: boolean): Event;
+    getTransactionAmount(toNumber?: boolean): Response;
     /**
      * Set transaction amount
      * @category Transaction Data
      */
-    setTransactionAmount(x: number | string, fraction?: number | boolean): Event;
+    setTransactionAmount(x: number | string, fraction?: number | boolean): Response;
     /**
      * Get convenience fee amount (transaction cost or tips)
      * @param toNumber Convert number string to number
      *
      * @category Transaction Data
      */
-    getConvenienceFeeAmount(toNumber?: boolean): Event;
+    getConvenienceFeeAmount(toNumber?: boolean): Response;
     /**
      * Set convenience fee amount (fixed amount) (transaction cost or tips)
      *
      * Set either one among these functions [[HKQR.setConvenienceFeeAmount]], [[HKQR.setConvenienceFeePercent]]
      * @category Transaction Data
      */
-    setConvenienceFeeAmount(x: number | string, fraction?: number | boolean): Event;
+    setConvenienceFeeAmount(x: number | string, fraction?: number | boolean): Response;
     /**
      * Get convenience fee percent (transaction cost or tips)
      * @param toNumber Convert number string to number
      *
      * @category Transaction Data
      */
-    getConvenienceFeePercent(toNumber?: boolean): Event;
+    getConvenienceFeePercent(toNumber?: boolean): Response;
     /**
      * Set convenience fee percent (fixed amount) (transaction cost or tips)
      *
      * Set either one among these functions [[HKQR.setConvenienceFeeAmount]], [[HKQR.setConvenienceFeePercent]]
      * @category Transaction Data
      */
-    setConvenienceFeePercent(x: number | string, fraction?: number | boolean): Event;
+    setConvenienceFeePercent(x: number | string, fraction?: number | boolean): Response;
     /**
      * Get all the billing information
      * @category Billing Data
      */
-    getAdditionalInfo(): Event;
+    getAdditionalInfo(): Response;
     /**
      * Set all the billing information
      * @category Billing Data
      */
-    setAdditionalInfo(x: VALID_OBJECT): Event;
+    setAdditionalInfo(x: VALID_OBJECT): Response;
     /**
      * Get the billing number
      * @category Billing Data
      */
-    getBillNumber(): Event;
+    getBillNumber(): Response;
     /**
      * Set the billing number
      * @category Billing Data
      */
-    setBillNumber(x: string): Event;
+    setBillNumber(x: string): Response;
     /**
      * Get the mobile number of the customer
      * @category Billing Data
      */
-    getCustomerMobileNumber(): Event;
+    getCustomerMobileNumber(): Response;
     /**
      * Set the mobile number of the customer
      * @category Billing Data
      */
-    setCustomerMobileNumber(x: string): Event;
+    setCustomerMobileNumber(x: string): Response;
     /**
      * Get the identifier of the store
      * @category Billing Data
      */
-    getStoreLabel(): Event;
+    getStoreLabel(): Response;
     /**
      * Set the identifier of the store
      * @category Billing Data
      */
-    setStoreLabel(x: string): Event;
+    setStoreLabel(x: string): Response;
     /**
      * Get the loyalty number of the customer
      * @category Billing Data
      */
-    getLoyaltyNumber(): Event;
+    getLoyaltyNumber(): Response;
     /**
      * Set the loyalty number of the customer
      * @category Billing Data
      */
-    setLoyaltyNumber(x: string): Event;
+    setLoyaltyNumber(x: string): Response;
     /**
      * Get the reference of the transaction
      * @category Billing Data
      */
-    getReferenceLabel(): Event;
+    getReferenceLabel(): Response;
     /**
      * Set the reference of the transaction
      * @category Billing Data
      */
-    setReferenceLabel(x: string): Event;
+    setReferenceLabel(x: string): Response;
     /**
      * Get the identifier for the customer
      * @category Billing Data
      */
-    getCustomerLabel(): Event;
+    getCustomerLabel(): Response;
     /**
      * Set the identifier for the customer
      * @category Billing Data
      */
-    setCustomerLabel(x: string): Event;
+    setCustomerLabel(x: string): Response;
     /**
      * Get the identifier of the payment terminal (e.g. POS/Credit Card terminal)
      * @category Billing Data
      */
-    getTerminalLabel(): Event;
+    getTerminalLabel(): Response;
     /**
      * Set the identifier of the payment terminal (e.g. POS/Credit Card terminal)
      * @category Billing Data
      */
-    setTerminalLabel(x: string): Event;
+    setTerminalLabel(x: string): Response;
     /**
      * Get the purpose of the transaction
      * @category Billing Data
      */
-    getTransactionPurpose(): Event;
+    getTransactionPurpose(): Response;
     /**
      * Set the purpose of the transaction
      * @category Billing Data
      */
-    setTransactionPurpose(x: string): Event;
+    setTransactionPurpose(x: string): Response;
     /**
      * Get any other information for the customer
      * @category Billing Data
      */
-    getCustomerDataRequest(): Event;
+    getCustomerDataRequest(): Response;
     /**
      * Set any other information for the customer
      * @category Billing Data
      */
-    setCustomerDataRequest(x: string): Event;
+    setCustomerDataRequest(x: string): Response;
     /**
      * Get any other information related to this billing
      * @category Billing Data
      */
-    getExtraAdditionalData(): Event;
+    getExtraAdditionalData(): Response;
     /**
      * Set any other information related to this billing
      * @category Billing Data
      */
-    setExtraAdditionalData(id: VALID_ID, x: string): Event;
+    setExtraAdditionalData(id: VALID_ID, x: string): Response;
     /**
      * Get localized merchant information
      * @category Merchant Information
      */
-    getMerchantInfo(): Event;
+    getMerchantInfo(): Response;
     /**
      * Set localized merchant information
      * @category Merchant Information
      */
-    setMerchantInfo(x: VALID_OBJECT): Event;
+    setMerchantInfo(x: VALID_OBJECT): Response;
     /**
      * Get the language of localized information
      * @category Merchant Information
      */
-    getLanguagePreference(): Event;
+    getLanguagePreference(): Response;
     /**
      * Set the language of localized information
      * @category Merchant Information
      */
-    setLanguagePreference(x: HKQR_LANGUAGE): Event;
+    setLanguagePreference(x: HKQR_LANGUAGE): Response;
     /**
      * Get the localized merchant name
      * @category Merchant Information
      */
-    getLocalizedMerchantName(): Event;
+    getLocalizedMerchantName(): Response;
     /**
      * Set the localized merchant name
      * @category Merchant Information
      */
-    setLocalizedMerchantName(x: string): Event;
+    setLocalizedMerchantName(x: string, y?: HKQR_LANGUAGE): Response;
     /**
      * Get the localized physical location of the merchant
      * @category Merchant Information
      */
-    getLocalizedMerchantCity(): Event;
+    getLocalizedMerchantCity(): Response;
     /**
      * Set the localized physical location of the merchant
      * @category Merchant Information
      */
-    setLocalizedMerchantCity(x: string): Event;
+    setLocalizedMerchantCity(x: string): Response;
     /**
      * Get all the localized information
      * @category Merchant Information
      */
-    getExtraLocalizedData(): Event;
+    getExtraLocalizedData(): Response;
     /**
      * Set all the localized information by ID
      * @category Merchant Information
      */
-    setExtraLocalizedData(id: VALID_ID, x: string): Event;
+    setExtraLocalizedData(id: VALID_ID, x: string): Response;
 }

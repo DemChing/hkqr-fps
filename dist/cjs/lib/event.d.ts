@@ -1,7 +1,7 @@
 /**
  * Default response for most of the functions
  */
-export default class Event {
+declare class Response {
     private error;
     data?: string | number | object;
     message?: string;
@@ -16,3 +16,4 @@ export default class Event {
     /** Set error detail */
     setError(x?: string, s?: boolean): void;
 }
+export default Response;

@@ -1,11 +1,11 @@
-import Event from "../lib/event";
+import Response from "../lib/event";
 
 // Import functions
 import crc16 from "../lib/crc";
 import { extract, isAlphanumericSpecial, numberToValidId } from "../lib/utils";
 
 // Import data
-import { ISO_COUNTRY, ISO_CURRENCY, ISO_LANGUAGE, ISO_MERCHANT_CATEGORY, HKQR_MERCHANT, HKQR_PARTICIPANT, MERCHANT_ACCOUNTS, HKQR_COUNTRY, HKQR_CURRENCY, HKQR_LANGUAGE, MERCHANT_CATEGORY, HKQR_PARTICIPANTS, MERCHANT_INFO } from "./config";
+import { HKQR_COUNTRY_LIST, HKQR_CURRENCY_LIST, HKQR_LANGUAGE_LIST, HKQR_MERCHANT_CATEGORY_LIST, HKQR_PARTICIPANT_LIST, MERCHANT_ACCOUNTS, HKQR_COUNTRY, HKQR_CURRENCY, HKQR_LANGUAGE, HKQR_MERCHANT_CATEGORY, HKQR_PARTICIPANTS, MERCHANT_INFO, MERCHANT_ACCOUNTS_TEMPLATE, HKQR_MERCHANT_ACCOUNT_LIST, HKQR_MERCHANT_TEMPLATE_LIST } from "./config";
 
 // Import constants for Main ID
 import { FORMAT_INDICATOR, INITIATION_POINT, MERCHANT_CATEGORY_CODE, TRANSACTION_CURRENCY, TRANSACTION_AMOUNT, CONVENIENCE_FEE_INDICATOR, CONVENIENCE_FEE_FIXED, CONVENIENCE_FEE_PERCENT, COUNTRY_CODE, MERCHANT_NAME, MERCHANT_CITY, POSTAL_CODE, ADDITIONAL_INFORMATION, CYCLIC_REDUNDANCY_CHECK, LOCALIZE_MERCHANT, USEFUL_CONSTANT } from "../lib/constant";
@@ -33,7 +33,7 @@ export default class HKQR implements IHKQR_CODE {
         uniqueIdentifier: "hk.com.hkicl"
     };
     /** @category Merchant Information */
-    private merchantCategory: MERCHANT_CATEGORY = "0000"; // ID: 52 // 0000 is Dummy value
+    private merchantCategory: HKQR_MERCHANT_CATEGORY = "0000"; // ID: 52 // 0000 is Dummy value
     /** @category Transaction Data */
     private transactionCurrency: HKQR_CURRENCY = "HKD"; // ID: 53
     /** @category Transaction Data */
@@ -64,7 +64,7 @@ export default class HKQR implements IHKQR_CODE {
      * @category static
      */
     static Silent(): void {
-        Event.Silent();
+        Response.Silent();
     }
 
     // Common Bank Participants
@@ -318,8 +318,8 @@ export default class HKQR implements IHKQR_CODE {
      * @param x Source string
      * @param length Maximum length available
      */
-    setAlphanumericSpecial(x: string, length: number): Event {
-        let event = new Event();
+    setAlphanumericSpecial(x: string, length: number): Response {
+        let event = new Response();
         if (typeof x === "undefined") {
             event.setError("Not Specified", true);
         } else if (x.length > length) {
@@ -336,9 +336,9 @@ export default class HKQR implements IHKQR_CODE {
      * @param fraction Force the number to be converted in fixed-point notation (i.e. `x.toFixed(fraction)`)
      * @param limit Maximum length available
      */
-    setNumeric(x: number | string, fraction: number | boolean = false, limit: number = 13): Event {
+    setNumeric(x: number | string, fraction: number | boolean = false, limit: number = 13): Response {
         let str: string,
-            event = new Event();
+            event = new Response();
         if (typeof x === "undefined") {
             event.setError("Not Specified", true);
         } else if (typeof x === "string") str = x;
@@ -362,7 +362,7 @@ export default class HKQR implements IHKQR_CODE {
      * Extract and parse data from plaintext
      * @param x Plaintext decoded from QR code
      */
-    parse(x: string): Event {
+    parse(x: string): Response {
         let event = this.extract(x);
         if (event.isError()) return event;
 
@@ -379,11 +379,11 @@ export default class HKQR implements IHKQR_CODE {
                     event.setError(`Invalid Initiation Point (id=${id})`);
                 }
             } else if (id == MERCHANT_CATEGORY_CODE) {
-                if (content in ISO_MERCHANT_CATEGORY) {
-                    this.merchantCategory = content as MERCHANT_CATEGORY;
+                if (content in HKQR_MERCHANT_CATEGORY_LIST) {
+                    this.merchantCategory = content as HKQR_MERCHANT_CATEGORY;
                 }
             } else if (id == TRANSACTION_CURRENCY) {
-                let currency = Object.keys(ISO_CURRENCY).filter(v => ISO_CURRENCY[v] == content);
+                let currency = Object.keys(HKQR_CURRENCY_LIST).filter(v => HKQR_CURRENCY_LIST[v] == content);
                 if (currency.length > 0) {
                     this.setTransactionCurrency(currency[0] as HKQR_CURRENCY);
                 } else {
@@ -398,7 +398,8 @@ export default class HKQR implements IHKQR_CODE {
             } else if (id == CONVENIENCE_FEE_PERCENT) {
                 this.setConvenienceFeePercent(content);
             } else if (id == COUNTRY_CODE) {
-                if (content in ISO_COUNTRY) {
+                content = content.toUpperCase();
+                if (HKQR_COUNTRY_LIST.indexOf(content) !== -1) {
                     this.countryCode = content as HKQR_COUNTRY;
                 }
             } else if (id == MERCHANT_NAME) {
@@ -411,7 +412,7 @@ export default class HKQR implements IHKQR_CODE {
                 this.setAdditionalInfo(content)
             } else if (id == CYCLIC_REDUNDANCY_CHECK) {
                 // Already Checked
-            } else if (HKQR_MERCHANT.ACCOUNTS.indexOf(id) != -1) {
+            } else if (HKQR_MERCHANT_ACCOUNT_LIST.indexOf(id as MERCHANT_ACCOUNTS) != -1) {
                 this.setMerchantAccount(content)
             }
         }
@@ -422,8 +423,8 @@ export default class HKQR implements IHKQR_CODE {
      * Extract data from plaintext
      * @param x Plaintext decoded from QR code
      */
-    extract(x: string = ""): Event {
-        let event = new Event();
+    extract(x: string = ""): Response {
+        let event = new Response();
         if (x.length == 0) {
             event = this.generate();
             if (event.isError()) return event;
@@ -450,15 +451,15 @@ export default class HKQR implements IHKQR_CODE {
     /**
      * Generate resulting string for QR code
      */
-    generate(): Event {
+    generate(): Response {
         let code: string = "",
-            event = new Event();
+            event = new Response();
         code += this.payload(FORMAT_INDICATOR, this.formatIndicator);
         code += this.payload(INITIATION_POINT, this.initiationPoint);
 
         // Merchant Data
         let merchantAccount: string = "";
-        if (HKQR_MERCHANT.TEMPLATE_ACCOUNTS.indexOf(this.merchantAccount) != -1) {
+        if (HKQR_MERCHANT_TEMPLATE_LIST.indexOf(this.merchantAccount as MERCHANT_ACCOUNTS_TEMPLATE) != -1) {
             if (!this.merchantAccountInfo) {
                 event.setError("Missing Merchant Account Information");
                 return event;
@@ -483,7 +484,7 @@ export default class HKQR implements IHKQR_CODE {
         code += this.payload(MERCHANT_CATEGORY_CODE, this.merchantCategory);
 
         // Transaction Data
-        code += this.payload(TRANSACTION_CURRENCY, ISO_CURRENCY[this.transactionCurrency]);
+        code += this.payload(TRANSACTION_CURRENCY, HKQR_CURRENCY_LIST[this.transactionCurrency]);
         if (this.transactionAmount && parseFloat(this.transactionAmount) > 0) {
             code += this.payload(TRANSACTION_AMOUNT, this.transactionAmount);
         }
@@ -598,8 +599,8 @@ export default class HKQR implements IHKQR_CODE {
      * Get setting
      * @category Point of Initiation
      */
-    getInitiationPoint(): Event {
-        let event = new Event();
+    getInitiationPoint(): Response {
+        let event = new Response();
         event.data = this.initiationPoint;
         return event;
     }
@@ -607,9 +608,9 @@ export default class HKQR implements IHKQR_CODE {
      * Update current setting
      * @category Point of Initiation
      */
-    setInitiationPoint(x: POINT_OF_INITIATION): Event {
-        let event = new Event();
-        if (!(x == STATIC_QR_CODE && x == DYNAMIC_QR_CODE)) {
+    setInitiationPoint(x: POINT_OF_INITIATION): Response {
+        let event = new Response();
+        if (!(x == STATIC_QR_CODE || x == DYNAMIC_QR_CODE)) {
             event.setError("Invalid Point of Initiation");
         } else {
             this.initiationPoint = x;
@@ -621,8 +622,8 @@ export default class HKQR implements IHKQR_CODE {
      * Get merchant ID
      * @category Merchant Account
      */
-    getMerchantAccountId(): Event {
-        let event = new Event();
+    getMerchantAccountId(): Response {
+        let event = new Response();
         event.data = this.merchantAccount
         return event;
     }
@@ -630,9 +631,9 @@ export default class HKQR implements IHKQR_CODE {
      * Set merchant ID
      * @category Merchant Account
      */
-    setMerchantAccountId(x: MERCHANT_ACCOUNTS): Event {
-        let event = new Event();
-        if (HKQR_MERCHANT.ACCOUNTS.indexOf(x) == -1) {
+    setMerchantAccountId(x: MERCHANT_ACCOUNTS): Response {
+        let event = new Response();
+        if (HKQR_MERCHANT_ACCOUNT_LIST.indexOf(x) == -1) {
             event.setError("Invalid Merchant Account ID");
         } else {
             this.merchantAccount = x;
@@ -644,8 +645,8 @@ export default class HKQR implements IHKQR_CODE {
      * Get country/region that the transaction take place
      * @category Merchant Information
      */
-    getCountryCode(): Event {
-        let event = new Event();
+    getCountryCode(): Response {
+        let event = new Response();
         event.data = this.countryCode
         return event;
     }
@@ -653,9 +654,10 @@ export default class HKQR implements IHKQR_CODE {
      * Set country/region that the transaction take place
      * @category Merchant Information
      */
-    setCountryCode(x: HKQR_COUNTRY): Event {
-        let event = new Event();
-        if (!(x in ISO_COUNTRY)) {
+    setCountryCode(x: HKQR_COUNTRY): Response {
+        let event = new Response();
+        x = x.toUpperCase() as HKQR_COUNTRY;
+        if (HKQR_COUNTRY_LIST.indexOf(x) !== -1) {
             event.setError("Invalid Country Code");
         } else {
             this.countryCode = x;
@@ -667,8 +669,8 @@ export default class HKQR implements IHKQR_CODE {
      * Get merchant account data
      * @category Merchant Account
      */
-    getMerchantAccount(): Event {
-        let event = new Event(),
+    getMerchantAccount(): Response {
+        let event = new Response(),
             info: VALID_OBJECT;
         if (this.merchantAccountInfo) {
             info[MERCHANT_ACCOUNT_UNIQUE] = this.merchantAccountInfo.uniqueIdentifier;
@@ -686,8 +688,8 @@ export default class HKQR implements IHKQR_CODE {
      * Set merchant account data
      * @category Merchant Account
      */
-    setMerchantAccount(x: VALID_OBJECT): Event {
-        let event = new Event(),
+    setMerchantAccount(x: VALID_OBJECT): Response {
+        let event = new Response(),
             uniqueIdentifier: string;
 
         if (MERCHANT_ACCOUNT_UNIQUE in x) {
@@ -724,7 +726,7 @@ export default class HKQR implements IHKQR_CODE {
             } else {
                 if (!this.merchantAccountInfo.paymentNetwork) this.merchantAccountInfo.paymentNetwork = {};
                 if (id == MERCHANT_ACCOUNT_PARTICIPANT) {
-                    if (!(x[id] in HKQR_PARTICIPANT)) {
+                    if (!(x[id] in HKQR_PARTICIPANT_LIST)) {
                         event.setError("Invalid Merchant Code");
                         continue;
                     }
@@ -764,8 +766,8 @@ export default class HKQR implements IHKQR_CODE {
      * Get unique identifier of the payment operator
      * @category Merchant Account
      */
-    getUniqueIdentifier(): Event {
-        let event = new Event;
+    getUniqueIdentifier(): Response {
+        let event = new Response;
         if (this.merchantAccountInfo) {
             event.data = this.merchantAccountInfo.uniqueIdentifier;
         }
@@ -780,7 +782,7 @@ export default class HKQR implements IHKQR_CODE {
      *
      * @category Merchant Account
      */
-    setUniqueIdentifier(x: string): Event {
+    setUniqueIdentifier(x: string): Response {
         let info: VALID_OBJECT = {};
         info[MERCHANT_ACCOUNT_UNIQUE] = x;
         return this.setMerchantAccount(info);
@@ -792,13 +794,15 @@ export default class HKQR implements IHKQR_CODE {
      *
      * @category Merchant Account
      */
-    getMerchantAccountParticipantCode(toName: boolean = false): Event {
-        let event = new Event;
+    getMerchantAccountParticipantCode(toName: boolean = false): Response {
+        let event = new Response;
         if (this?.merchantAccountInfo?.paymentNetwork && MERCHANT_ACCOUNT_PARTICIPANT in this.merchantAccountInfo.paymentNetwork) {
             event.data = this.merchantAccountInfo.paymentNetwork[MERCHANT_ACCOUNT_PARTICIPANT];
             if (toName) {
-                event.data = HKQR_PARTICIPANT[event.data];
+                event.data = HKQR_PARTICIPANT_LIST[event.data];
             }
+        } else {
+            event.setError('Merchant Account Participant Code not set');
         }
         return event;
     }
@@ -806,7 +810,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set merchant account participant code
      * @category Merchant Account
      */
-    setMerchantAccountParticipantCode(x: HKQR_PARTICIPANTS): Event {
+    setMerchantAccountParticipantCode(x: HKQR_PARTICIPANTS): Response {
         let info: VALID_OBJECT = {};
         info[MERCHANT_ACCOUNT_PARTICIPANT] = x;
         return this.setMerchantAccount(info);
@@ -816,10 +820,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get merchant account identifier - FPS ID
      * @category Merchant Account
      */
-    getMerchantAccountFPSId(): Event {
-        let event = new Event;
+    getMerchantAccountFPSId(): Response {
+        let event = new Response;
         if (this?.merchantAccountInfo?.paymentNetwork) {
             event.data = this.merchantAccountInfo.paymentNetwork[MERCHANT_ACCOUNT_IDENTIFIER_FPS];
+        } else {
+            event.setError('FPS ID not set');
         }
         return event;
     }
@@ -829,7 +835,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set either one among these functions [[HKQR.setMerchantAccountFPSId]], [[HKQR.setMerchantAccountMobile]], [[HKQR.setMerchantAccountEmail]]
      * @category Merchant Account
      */
-    setMerchantAccountFPSId(x: number | string): Event {
+    setMerchantAccountFPSId(x: number | string): Response {
         let info: VALID_OBJECT = {},
             id: string;
         if (typeof x === "number") id = x.toString();
@@ -842,10 +848,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get merchant account identifier - Mobile Number
      * @category Merchant Account
      */
-    getMerchantAccountMobile(): Event {
-        let event = new Event;
+    getMerchantAccountMobile(): Response {
+        let event = new Response;
         if (this?.merchantAccountInfo?.paymentNetwork) {
             event.data = this.merchantAccountInfo.paymentNetwork[MERCHANT_ACCOUNT_IDENTIFIER_MOBILE];
+        } else {
+            event.setError('Mobile Number not set');
         }
         return event;
     }
@@ -855,7 +863,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set either one among these functions [[HKQR.setMerchantAccountFPSId]], [[HKQR.setMerchantAccountMobile]], [[HKQR.setMerchantAccountEmail]]
      * @category Merchant Account
      */
-    setMerchantAccountMobile(x: number | string): Event {
+    setMerchantAccountMobile(x: number | string): Response {
         let info: VALID_OBJECT = {},
             mobile: string;
         if (typeof x === "number") mobile = x.toString();
@@ -868,10 +876,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get merchant account identifier - Email
      * @category Merchant Account
      */
-    getMerchantAccountEmail(): Event {
-        let event = new Event;
+    getMerchantAccountEmail(): Response {
+        let event = new Response;
         if (this?.merchantAccountInfo?.paymentNetwork) {
             event.data = this.merchantAccountInfo.paymentNetwork[MERCHANT_ACCOUNT_IDENTIFIER_EMAIL];
+        } else {
+            event.setError('Email not set');
         }
         return event;
     }
@@ -881,7 +891,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set either one among these functions [[HKQR.setMerchantAccountFPSId]], [[HKQR.setMerchantAccountMobile]], [[HKQR.setMerchantAccountEmail]]
      * @category Merchant Account
      */
-    setMerchantAccountEmail(x: string): Event {
+    setMerchantAccountEmail(x: string): Response {
         let info: VALID_OBJECT = {};
         info[MERCHANT_ACCOUNT_IDENTIFIER_EMAIL] = x;
         return this.setMerchantAccount(info);
@@ -891,10 +901,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get merchant account data
      * @category Merchant Account
      */
-    getPaymentNetwork(): Event {
-        let event = new Event;
+    getPaymentNetwork(): Response {
+        let event = new Response;
         if (this?.merchantAccountInfo?.paymentNetwork) {
             event.data = this.merchantAccountInfo.paymentNetwork;
+        } else {
+            event.setError('Payment Network not set');
         }
         return event;
     }
@@ -902,7 +914,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set merchant account data by ID
      * @category Merchant Account
      */
-    setPaymentNetwork(id: VALID_ID, x: string): Event {
+    setPaymentNetwork(id: VALID_ID, x: string): Response {
         let info: VALID_OBJECT = {};
         info[id] = x;
         return this.setMerchantAccount(info);
@@ -912,8 +924,8 @@ export default class HKQR implements IHKQR_CODE {
      * Get merchant name
      * @category Merchant Information
      */
-    getMerchantName(): Event {
-        let event = new Event;
+    getMerchantName(): Response {
+        let event = new Response;
         event.data = this.merchantName;
         return event;
     }
@@ -921,7 +933,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set merchant name
      * @category Merchant Information
      */
-    setMerchantName(x: string): Event {
+    setMerchantName(x: string): Response {
         let event = this.setAlphanumericSpecial(x, 25);
         if (event.isError()) {
             event.setError(`Merchant Name ${event.message}`);
@@ -935,8 +947,8 @@ export default class HKQR implements IHKQR_CODE {
      * Get physical location of the merchant
      * @category Merchant Information
      */
-    getMerchantCity(): Event {
-        let event = new Event;
+    getMerchantCity(): Response {
+        let event = new Response;
         event.data = this.merchantCity;
         return event;
     }
@@ -944,7 +956,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set physical location of the merchant
      * @category Merchant Information
      */
-    setMerchantCity(x: string): Event {
+    setMerchantCity(x: string): Response {
         let event = this.setAlphanumericSpecial(x, 15);
         if (event.isError()) {
             event.setError(`Merchant City ${event.message}`);
@@ -958,8 +970,8 @@ export default class HKQR implements IHKQR_CODE {
      * Get postal code of the merchant
      * @category Merchant Information
      */
-    getPostalCode(): Event {
-        let event = new Event;
+    getPostalCode(): Response {
+        let event = new Response;
         event.data = this.postalCode;
         return event;
     }
@@ -967,7 +979,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set postal code of the merchant
      * @category Merchant Information
      */
-    setPostalCode(x: string): Event {
+    setPostalCode(x: string): Response {
         let event = this.setAlphanumericSpecial(x, 10);
         if (event.isError()) {
             event.setError(`Postal Code ${event.message}`);
@@ -983,11 +995,11 @@ export default class HKQR implements IHKQR_CODE {
      *
      * @category Merchant Information
      */
-    getMerchantCategory(toName: boolean = false): Event {
-        let event = new Event;
+    getMerchantCategory(toName: boolean = false): Response {
+        let event = new Response;
         event.data = this.merchantCategory;
         if (toName) {
-            event.data = ISO_MERCHANT_CATEGORY[event.data];
+            event.data = HKQR_MERCHANT_CATEGORY_LIST[event.data];
         }
         return event;
     }
@@ -995,9 +1007,9 @@ export default class HKQR implements IHKQR_CODE {
      * Set merchant category code. `0000` if not applicable.
      * @category Merchant Information
      */
-    setMerchantCategory(x: MERCHANT_CATEGORY): Event {
-        let event = new Event();
-        if (x in ISO_MERCHANT_CATEGORY) {
+    setMerchantCategory(x: HKQR_MERCHANT_CATEGORY): Response {
+        let event = new Response();
+        if (x in HKQR_MERCHANT_CATEGORY_LIST) {
             event.setError("Invalid Merchant Category");
         } else {
             this.merchantCategory = x;
@@ -1011,11 +1023,11 @@ export default class HKQR implements IHKQR_CODE {
      *
      * @category Transaction Data
      */
-    getTransactionCurrency(toCode: boolean = false): Event {
-        let event = new Event;
+    getTransactionCurrency(toCode: boolean = false): Response {
+        let event = new Response;
         event.data = this.transactionCurrency;
         if (toCode) {
-            event.data = ISO_CURRENCY[event.data];
+            event.data = HKQR_CURRENCY_LIST[event.data];
         }
         return event;
     }
@@ -1025,10 +1037,10 @@ export default class HKQR implements IHKQR_CODE {
      * Will be converted to number in [[HKQR.generate]]
      * @category Transaction Data
      */
-    setTransactionCurrency(x: HKQR_CURRENCY): Event {
+    setTransactionCurrency(x: HKQR_CURRENCY): Response {
         x = x.toUpperCase() as HKQR_CURRENCY;
-        let event = new Event();
-        if (!(x in ISO_CURRENCY)) {
+        let event = new Response();
+        if (!(x in HKQR_CURRENCY_LIST)) {
             event.setError("Invalid Currency Code");
         } else {
             this.transactionCurrency = x;
@@ -1043,8 +1055,8 @@ export default class HKQR implements IHKQR_CODE {
      *
      * @category Transaction Data
      */
-    getTransactionAmount(toNumber: boolean = false): Event {
-        let event = new Event;
+    getTransactionAmount(toNumber: boolean = false): Response {
+        let event = new Response;
         event.data = this.transactionAmount;
         if (toNumber) {
             event.data = parseFloat(event.data);
@@ -1055,7 +1067,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set transaction amount
      * @category Transaction Data
      */
-    setTransactionAmount(x: number | string, fraction: number | boolean = false): Event {
+    setTransactionAmount(x: number | string, fraction: number | boolean = false): Response {
         let event = this.setNumeric(x, fraction);
         if (event.isError()) {
             event.setError(`Transaction Amount ${event.message}`);
@@ -1071,8 +1083,8 @@ export default class HKQR implements IHKQR_CODE {
      *
      * @category Transaction Data
      */
-    getConvenienceFeeAmount(toNumber: boolean = false): Event {
-        let event = new Event;
+    getConvenienceFeeAmount(toNumber: boolean = false): Response {
+        let event = new Response;
         event.data = this.convenienceFeeAmount;
         if (toNumber) {
             event.data = parseFloat(event.data);
@@ -1085,7 +1097,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set either one among these functions [[HKQR.setConvenienceFeeAmount]], [[HKQR.setConvenienceFeePercent]]
      * @category Transaction Data
      */
-    setConvenienceFeeAmount(x: number | string, fraction: number | boolean = false): Event {
+    setConvenienceFeeAmount(x: number | string, fraction: number | boolean = false): Response {
         let event = this.setNumeric(x, fraction);
         if (event.isError()) {
             event.setError(`Convenience Fee Amount ${event.message}`);
@@ -1102,8 +1114,8 @@ export default class HKQR implements IHKQR_CODE {
      *
      * @category Transaction Data
      */
-    getConvenienceFeePercent(toNumber: boolean = false): Event {
-        let event = new Event;
+    getConvenienceFeePercent(toNumber: boolean = false): Response {
+        let event = new Response;
         event.data = this.convenienceFeePercent;
         if (toNumber) {
             event.data = parseFloat(event.data);
@@ -1116,7 +1128,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set either one among these functions [[HKQR.setConvenienceFeeAmount]], [[HKQR.setConvenienceFeePercent]]
      * @category Transaction Data
      */
-    setConvenienceFeePercent(x: number | string, fraction: number | boolean = false): Event {
+    setConvenienceFeePercent(x: number | string, fraction: number | boolean = false): Response {
         let event = this.setNumeric(x, fraction);
         if (event.isError()) {
             event.setError(`Convenience Fee Percent ${event.message}`);
@@ -1131,8 +1143,8 @@ export default class HKQR implements IHKQR_CODE {
      * Get all the billing information
      * @category Billing Data
      */
-    getAdditionalInfo(): Event {
-        let event = new Event(),
+    getAdditionalInfo(): Response {
+        let event = new Response(),
             info: VALID_OBJECT;
         if (this.additionalInfo) {
             if (this.additionalInfo.billNumber) {
@@ -1176,8 +1188,8 @@ export default class HKQR implements IHKQR_CODE {
      * Set all the billing information
      * @category Billing Data
      */
-    setAdditionalInfo(x: VALID_OBJECT): Event {
-        let event = new Event();
+    setAdditionalInfo(x: VALID_OBJECT): Response {
+        let event = new Response();
         if (!this.additionalInfo) this.additionalInfo = {};
         if (ADDITIONAL_INFO_BILL in x) {
             event = this.setAlphanumericSpecial(x[ADDITIONAL_INFO_BILL], 25);
@@ -1280,10 +1292,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get the billing number
      * @category Billing Data
      */
-    getBillNumber(): Event {
-        let event = new Event;
+    getBillNumber(): Response {
+        let event = new Response;
         if (this?.additionalInfo?.billNumber) {
             event.data = this.additionalInfo.billNumber;
+        } else {
+            event.setError('Bill Number not set');
         }
         return event;
     }
@@ -1291,7 +1305,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set the billing number
      * @category Billing Data
      */
-    setBillNumber(x: string): Event {
+    setBillNumber(x: string): Response {
         let info: VALID_OBJECT = {};
         info[ADDITIONAL_INFO_BILL] = x;
         return this.setAdditionalInfo(info);
@@ -1301,10 +1315,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get the mobile number of the customer
      * @category Billing Data
      */
-    getCustomerMobileNumber(): Event {
-        let event = new Event;
+    getCustomerMobileNumber(): Response {
+        let event = new Response;
         if (this?.additionalInfo?.mobileNumber) {
             event.data = this.additionalInfo.mobileNumber;
+        } else {
+            event.setError('Customer Mobile Number not set');
         }
         return event;
     }
@@ -1312,7 +1328,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set the mobile number of the customer
      * @category Billing Data
      */
-    setCustomerMobileNumber(x: string): Event {
+    setCustomerMobileNumber(x: string): Response {
         let info: VALID_OBJECT = {};
         info[ADDITIONAL_INFO_MOBILE] = x;
         return this.setAdditionalInfo(info);
@@ -1322,10 +1338,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get the identifier of the store
      * @category Billing Data
      */
-    getStoreLabel(): Event {
-        let event = new Event;
+    getStoreLabel(): Response {
+        let event = new Response;
         if (this?.additionalInfo?.storeLabel) {
             event.data = this.additionalInfo.storeLabel;
+        } else {
+            event.setError('Store Label not set');
         }
         return event;
     }
@@ -1333,7 +1351,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set the identifier of the store
      * @category Billing Data
      */
-    setStoreLabel(x: string): Event {
+    setStoreLabel(x: string): Response {
         let info: VALID_OBJECT = {};
         info[ADDITIONAL_INFO_STORE] = x;
         return this.setAdditionalInfo(info);
@@ -1343,10 +1361,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get the loyalty number of the customer
      * @category Billing Data
      */
-    getLoyaltyNumber(): Event {
-        let event = new Event;
+    getLoyaltyNumber(): Response {
+        let event = new Response;
         if (this?.additionalInfo?.loyaltyNumber) {
             event.data = this.additionalInfo.loyaltyNumber;
+        } else {
+            event.setError('Customer Loyalty Number not set');
         }
         return event;
     }
@@ -1354,7 +1374,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set the loyalty number of the customer
      * @category Billing Data
      */
-    setLoyaltyNumber(x: string): Event {
+    setLoyaltyNumber(x: string): Response {
         let info: VALID_OBJECT = {};
         info[ADDITIONAL_INFO_LOYALTY] = x;
         return this.setAdditionalInfo(info);
@@ -1364,10 +1384,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get the reference of the transaction
      * @category Billing Data
      */
-    getReferenceLabel(): Event {
-        let event = new Event;
+    getReferenceLabel(): Response {
+        let event = new Response;
         if (this?.additionalInfo?.referenceLabel) {
             event.data = this.additionalInfo.referenceLabel;
+        } else {
+            event.setError('Reference Label not set');
         }
         return event;
     }
@@ -1375,7 +1397,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set the reference of the transaction
      * @category Billing Data
      */
-    setReferenceLabel(x: string): Event {
+    setReferenceLabel(x: string): Response {
         let info: VALID_OBJECT = {};
         info[ADDITIONAL_INFO_REFERENCE] = x;
         return this.setAdditionalInfo(info);
@@ -1385,10 +1407,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get the identifier for the customer
      * @category Billing Data
      */
-    getCustomerLabel(): Event {
-        let event = new Event;
+    getCustomerLabel(): Response {
+        let event = new Response;
         if (this?.additionalInfo?.customerLabel) {
             event.data = this.additionalInfo.customerLabel;
+        } else {
+            event.setError('Customer Label not set');
         }
         return event;
     }
@@ -1396,7 +1420,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set the identifier for the customer
      * @category Billing Data
      */
-    setCustomerLabel(x: string): Event {
+    setCustomerLabel(x: string): Response {
         let info: VALID_OBJECT = {};
         info[ADDITIONAL_INFO_CUSTOMER] = x;
         return this.setAdditionalInfo(info);
@@ -1406,10 +1430,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get the identifier of the payment terminal (e.g. POS/Credit Card terminal)
      * @category Billing Data
      */
-    getTerminalLabel(): Event {
-        let event = new Event;
+    getTerminalLabel(): Response {
+        let event = new Response;
         if (this?.additionalInfo?.terminalLabel) {
             event.data = this.additionalInfo.terminalLabel;
+        } else {
+            event.setError('Terminal Label not set');
         }
         return event;
     }
@@ -1417,7 +1443,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set the identifier of the payment terminal (e.g. POS/Credit Card terminal)
      * @category Billing Data
      */
-    setTerminalLabel(x: string): Event {
+    setTerminalLabel(x: string): Response {
         let info: VALID_OBJECT = {};
         info[ADDITIONAL_INFO_TERMINAL] = x;
         return this.setAdditionalInfo(info);
@@ -1427,10 +1453,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get the purpose of the transaction
      * @category Billing Data
      */
-    getTransactionPurpose(): Event {
-        let event = new Event;
+    getTransactionPurpose(): Response {
+        let event = new Response;
         if (this?.additionalInfo?.transactionPurpose) {
             event.data = this.additionalInfo.transactionPurpose;
+        } else {
+            event.setError('Transaction Purpose not set');
         }
         return event;
     }
@@ -1438,7 +1466,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set the purpose of the transaction
      * @category Billing Data
      */
-    setTransactionPurpose(x: string): Event {
+    setTransactionPurpose(x: string): Response {
         let info: VALID_OBJECT = {};
         info[ADDITIONAL_INFO_PURPOSE] = x;
         return this.setAdditionalInfo(info);
@@ -1448,10 +1476,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get any other information for the customer
      * @category Billing Data
      */
-    getCustomerDataRequest(): Event {
-        let event = new Event;
+    getCustomerDataRequest(): Response {
+        let event = new Response;
         if (this?.additionalInfo?.customerDataRequest) {
             event.data = this.additionalInfo.customerDataRequest;
+        } else {
+            event.setError('Customer Data Request not set');
         }
         return event;
     }
@@ -1459,7 +1489,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set any other information for the customer
      * @category Billing Data
      */
-    setCustomerDataRequest(x: string): Event {
+    setCustomerDataRequest(x: string): Response {
         let info: VALID_OBJECT = {};
         info[ADDITIONAL_INFO_REQUEST] = x;
         return this.setAdditionalInfo(info);
@@ -1469,10 +1499,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get any other information related to this billing
      * @category Billing Data
      */
-    getExtraAdditionalData(): Event {
-        let event = new Event;
+    getExtraAdditionalData(): Response {
+        let event = new Response;
         if (this?.additionalInfo?.extra) {
             event.data = this.additionalInfo.extra;
+        } else {
+            event.setError('Extra Additional Data not set');
         }
         return event;
     }
@@ -1480,7 +1512,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set any other information related to this billing
      * @category Billing Data
      */
-    setExtraAdditionalData(id: VALID_ID, x: string): Event {
+    setExtraAdditionalData(id: VALID_ID, x: string): Response {
         let info: VALID_OBJECT = {};
         info[id] = x;
         return this.setAdditionalInfo(info);
@@ -1490,8 +1522,8 @@ export default class HKQR implements IHKQR_CODE {
      * Get localized merchant information
      * @category Merchant Information
      */
-    getMerchantInfo(): Event {
-        let event = new Event,
+    getMerchantInfo(): Response {
+        let event = new Response,
             info: VALID_OBJECT;
         if (this.merchantInfo) {
             info[MERCHANT_INFO_LANGUAGE] = this.merchantInfo.language;
@@ -1513,13 +1545,14 @@ export default class HKQR implements IHKQR_CODE {
      * Set localized merchant information
      * @category Merchant Information
      */
-    setMerchantInfo(x: VALID_OBJECT): Event {
-        let event = new Event(),
+    setMerchantInfo(x: VALID_OBJECT): Response {
+        let event = new Response(),
             language: HKQR_LANGUAGE,
             merchantName: string;
 
         if (MERCHANT_INFO_LANGUAGE in x) {
-            if (x[MERCHANT_INFO_LANGUAGE] in ISO_LANGUAGE) {
+            x[MERCHANT_INFO_LANGUAGE] = x[MERCHANT_INFO_LANGUAGE].toUpperCase();
+            if (x[MERCHANT_INFO_LANGUAGE] in HKQR_LANGUAGE_LIST) {
                 language = x[MERCHANT_INFO_LANGUAGE] as HKQR_LANGUAGE;
             } else {
                 event.setError("Invalid Language Preference");
@@ -1585,10 +1618,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get the language of localized information
      * @category Merchant Information
      */
-    getLanguagePreference(): Event {
-        let event = new Event;
+    getLanguagePreference(): Response {
+        let event = new Response;
         if (this?.merchantInfo?.language) {
             event.data = this.merchantInfo.language;
+        } else {
+            event.setError('Language of Localization not set');
         }
         return event;
     }
@@ -1596,7 +1631,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set the language of localized information
      * @category Merchant Information
      */
-    setLanguagePreference(x: HKQR_LANGUAGE): Event {
+    setLanguagePreference(x: HKQR_LANGUAGE): Response {
         let info: VALID_OBJECT = {};
         info[MERCHANT_INFO_LANGUAGE] = x;
         return this.setMerchantInfo(info);
@@ -1606,10 +1641,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get the localized merchant name
      * @category Merchant Information
      */
-    getLocalizedMerchantName(): Event {
-        let event = new Event;
+    getLocalizedMerchantName(): Response {
+        let event = new Response;
         if (this?.merchantInfo?.merchantName) {
             event.data = this.merchantInfo.merchantName;
+        } else {
+            event.setError('Localized Merchant Name not set');
         }
         return event;
     }
@@ -1617,9 +1654,12 @@ export default class HKQR implements IHKQR_CODE {
      * Set the localized merchant name
      * @category Merchant Information
      */
-    setLocalizedMerchantName(x: string): Event {
+    setLocalizedMerchantName(x: string, y?: HKQR_LANGUAGE): Response {
         let info: VALID_OBJECT = {};
         info[MERCHANT_INFO_NAME] = x;
+        if (y) {
+            info[MERCHANT_INFO_LANGUAGE] = y;
+        }
         return this.setMerchantInfo(info);
     }
 
@@ -1627,10 +1667,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get the localized physical location of the merchant
      * @category Merchant Information
      */
-    getLocalizedMerchantCity(): Event {
-        let event = new Event;
+    getLocalizedMerchantCity(): Response {
+        let event = new Response;
         if (this?.merchantInfo?.merchantCity) {
             event.data = this.merchantInfo.merchantCity;
+        } else {
+            event.setError('Localized Merchant City not set');
         }
         return event;
     }
@@ -1638,7 +1680,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set the localized physical location of the merchant
      * @category Merchant Information
      */
-    setLocalizedMerchantCity(x: string): Event {
+    setLocalizedMerchantCity(x: string): Response {
         let info: VALID_OBJECT = {};
         info[MERCHANT_INFO_CITY] = x;
         return this.setMerchantInfo(info);
@@ -1648,10 +1690,12 @@ export default class HKQR implements IHKQR_CODE {
      * Get all the localized information
      * @category Merchant Information
      */
-    getExtraLocalizedData(): Event {
-        let event = new Event;
+    getExtraLocalizedData(): Response {
+        let event = new Response;
         if (this?.merchantInfo?.extra) {
             event.data = this.merchantInfo.extra;
+        } else {
+            event.setError('Extra Localized Data not set');
         }
         return event;
     }
@@ -1659,7 +1703,7 @@ export default class HKQR implements IHKQR_CODE {
      * Set all the localized information by ID
      * @category Merchant Information
      */
-    setExtraLocalizedData(id: VALID_ID, x: string): Event {
+    setExtraLocalizedData(id: VALID_ID, x: string): Response {
         let info: VALID_OBJECT = {};
         info[id] = x;
         return this.setMerchantInfo(info);

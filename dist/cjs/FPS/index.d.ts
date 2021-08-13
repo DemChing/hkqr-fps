@@ -1,4 +1,4 @@
-import Event from "../lib/event";
+import Response from "../lib/event";
 import { FPS_CURRENCY, FPS_PARTICIPANTS } from "./config";
 import { VALID_ID, VALID_OBJECT } from "../lib/constant";
 import { IFPS_CODE } from "./config";
@@ -199,28 +199,28 @@ export default class FPS implements IFPS_CODE {
      * @param x Source string
      * @param length Maximum length available
      */
-    setAlphanumericSpecial(x: string, length: number): Event;
+    setAlphanumericSpecial(x: string, length: number): Response;
     /**
      * Function to validate a string or number as a valid numeric string
      * @param x Source string or number
      * @param fraction Force the number to be converted in fixed-point notation (i.e. `x.toFixed(fraction)`)
      * @param limit Maximum length available
      */
-    setNumeric(x: number | string, fraction?: number | boolean, limit?: number): Event;
+    setNumeric(x: number | string, fraction?: number | boolean, limit?: number): Response;
     /**
      * Extract and parse data from plaintext
      * @param x Plaintext decoded from QR code
      */
-    parse(x: string): Event;
+    parse(x: string): Response;
     /**
      * Extract data from plaintext
      * @param x Plaintext decoded from QR code
      */
-    extract(x?: string): Event;
+    extract(x?: string): Response;
     /**
      * Generate resulting string for QR code
      */
-    generate(): Event;
+    generate(): Response;
     /**
      * Check if it is a static QR Code
      * @category Point of Initiation
@@ -230,34 +230,34 @@ export default class FPS implements IFPS_CODE {
      * Set it to a static QR Code
      * @category Point of Initiation
      */
-    setStatic(): Event;
+    setStatic(): Response;
     /**
      * Set it to a dynamic QR Code
      * @category Point of Initiation
      */
-    setDynamic(): Event;
+    setDynamic(): Response;
     /**
      * Set merchant account data
      * @category Merchant Account
      */
-    setMerchantAccount(x: VALID_OBJECT): Event;
+    setMerchantAccount(x: VALID_OBJECT): Response;
     /**
      * Get merchant account participant code
      * @param toName Return the name of the participant
      *
      * @category Merchant Account
      */
-    getBank(toName?: boolean): Event;
+    getBank(toName?: boolean): Response;
     /**
      * Set merchant account participant code
      * @category Merchant Account
      */
-    setBank(x: FPS_PARTICIPANTS): Event;
+    setBank(x: FPS_PARTICIPANTS): Response;
     /**
      * Get merchant account identifier - FPS ID
      * @category Merchant Account
      */
-    getFPSId(): Event;
+    getFPSId(): Response;
     /**
      * Set merchant account identifier - FPS ID
      *
@@ -265,12 +265,12 @@ export default class FPS implements IFPS_CODE {
      *
      * @category Merchant Account
      */
-    setFPSId(x: number | string): Event;
+    setFPSId(x: number | string): Response;
     /**
      * Get merchant account identifier - Mobile Number
      * @category Merchant Account
      */
-    getMobile(): Event;
+    getMobile(): Response;
     /**
      * Set merchant account identifier - Mobile Number
      *
@@ -278,12 +278,12 @@ export default class FPS implements IFPS_CODE {
      *
      * @category Merchant Account
      */
-    setMobile(x: number | string): Event;
+    setMobile(x: number | string): Response;
     /**
      * Get merchant account identifier - Email
      * @category Merchant Account
      */
-    getEmail(): Event;
+    getEmail(): Response;
     /**
      * Set merchant account identifier - Email
      *
@@ -291,65 +291,65 @@ export default class FPS implements IFPS_CODE {
      *
      * @category Merchant Account
      */
-    setEmail(x: string): Event;
+    setEmail(x: string): Response;
     /**
      * Get transaction amount
      * @param toNumber Convert number string to number
      *
      * @category Transaction Data
      */
-    getAmount(toNumber?: boolean): Event;
+    getAmount(toNumber?: boolean): Response;
     /**
      * Set transaction amount
      * @category Transaction Data
      */
-    setAmount(x: number): Event;
+    setAmount(x: number): Response;
     /**
      * Set all the billing information
      * @category Billing Data
      */
-    setAdditionalInfo(x: VALID_OBJECT): Event;
+    setAdditionalInfo(x: VALID_OBJECT): Response;
     /**
      * Get the billing number
      * @category Billing Data
      */
-    getBillNumber(): Event;
+    getBillNumber(): Response;
     /**
      * Set the billing number
      * @category Billing Data
      */
-    setBillNumber(x: string): Event;
+    setBillNumber(x: string): Response;
     /**
      * Get the reference of the transaction
      * @category Billing Data
      */
-    getReference(): Event;
+    getReference(): Response;
     /**
      * Set the reference of the transaction
      * @category Billing Data
      */
-    setReference(x: string): Event;
+    setReference(x: string): Response;
     /**
      * Set transaction currency to Hong Kong Dollar (HKD)
      *
      * See [[FPS.setCurrency]]
      * @category Transaction Data
      */
-    setHKD(): Event;
+    setHKD(): Response;
     /**
      * Set transaction currency to Chinese Yuan Renmenbi (CNY)
      *
      * See [[FPS.setCurrency]]
      * @category Transaction Data
      */
-    setCNY(): Event;
+    setCNY(): Response;
     /**
      * Get transaction currency code
      * @param toCode Get the 3-digit number code instead
      *
      * @category Transaction Data
      */
-    getCurrency(toCode?: boolean): Event;
+    getCurrency(toCode?: boolean): Response;
     /**
      * Set transaction currency code
      *
@@ -357,5 +357,5 @@ export default class FPS implements IFPS_CODE {
      *
      * @category Transaction Data
      */
-    setCurrency(x: FPS_CURRENCY): Event;
+    setCurrency(x: FPS_CURRENCY): Response;
 }

@@ -1,11 +1,11 @@
-import Event from "../lib/event";
+import Response from "../lib/event";
 
 // Import functions
 import crc16 from "../lib/crc";
 import { extract, isAlphanumericSpecial, numberToValidId } from "../lib/utils";
 
 // Import data
-import { FPS_CURRENCY, FPS_PARTICIPANT, FPS_PARTICIPANTS, FPS_MERCHANT } from "./config";
+import { FPS_CURRENCY, FPS_PARTICIPANT_LIST, FPS_PARTICIPANTS, FPS_MERCHANT, FPS_CURRENCY_LIST } from "./config";
 
 // Import constants for Main ID
 import { FORMAT_INDICATOR, INITIATION_POINT, MERCHANT_CATEGORY_CODE, TRANSACTION_CURRENCY, TRANSACTION_AMOUNT, COUNTRY_CODE, MERCHANT_NAME, MERCHANT_CITY, ADDITIONAL_INFORMATION, CYCLIC_REDUNDANCY_CHECK, USEFUL_CONSTANT } from "../lib/constant";
@@ -41,7 +41,7 @@ export default class FPS implements IFPS_CODE {
     /** @category Transaction Data */
     private transactionAmount?: string; // ID: 54
     /** @category Merchant Information */
-    private countryCode: string = "HK"; // ID: 58
+    private countryCode: "HK" = "HK"; // ID: 58
     /** @category Merchant Information */
     private merchantName: string = "NA"; // ID: 59
     /** @category Merchant Information */
@@ -56,7 +56,7 @@ export default class FPS implements IFPS_CODE {
      * @category static
      */
     static Silent(): void {
-        Event.Silent();
+        Response.Silent();
     }
 
     // Common Bank Participants
@@ -234,8 +234,8 @@ export default class FPS implements IFPS_CODE {
      * @param x Source string
      * @param length Maximum length available
      */
-    setAlphanumericSpecial(x: string, length: number): Event {
-        let event = new Event();
+    setAlphanumericSpecial(x: string, length: number): Response {
+        let event = new Response();
         if (typeof x === "undefined") {
             event.setError("Not Specified", true);
         } else if (x.length > length) {
@@ -252,9 +252,9 @@ export default class FPS implements IFPS_CODE {
      * @param fraction Force the number to be converted in fixed-point notation (i.e. `x.toFixed(fraction)`)
      * @param limit Maximum length available
      */
-    setNumeric(x: number | string, fraction: number | boolean = false, limit: number = 13): Event {
+    setNumeric(x: number | string, fraction: number | boolean = false, limit: number = 13): Response {
         let str: string,
-            event = new Event();
+            event = new Response();
         if (typeof x === "undefined") {
             event.setError("Not Specified", true);
         } else if (typeof x === "string") str = x;
@@ -279,7 +279,7 @@ export default class FPS implements IFPS_CODE {
      * Extract and parse data from plaintext
      * @param x Plaintext decoded from QR code
      */
-    parse(x: string): Event {
+    parse(x: string): Response {
         let event = this.extract(x);
         if (event.isError()) return event;
 
@@ -296,7 +296,8 @@ export default class FPS implements IFPS_CODE {
                     event.setError(`Invalid Initiation Point (id=${id})`);
                 }
             } else if (id == TRANSACTION_CURRENCY) {
-                let currency = Object.keys(FPS_CURRENCY).filter(v => FPS_CURRENCY[v] == content);
+                content = content.toUpperCase();
+                let currency = Object.keys(FPS_CURRENCY_LIST).filter(v => FPS_CURRENCY_LIST[v] == content);
                 if (currency.length > 0) {
                     this.setCurrency(currency[0] as FPS_CURRENCY);
                 } else {
@@ -323,8 +324,8 @@ export default class FPS implements IFPS_CODE {
      * Extract data from plaintext
      * @param x Plaintext decoded from QR code
      */
-    extract(x: string = ""): Event {
-        let event = new Event();
+    extract(x: string = ""): Response {
+        let event = new Response();
         if (x.length == 0) {
             event = this.generate();
             if (event.isError()) return event;
@@ -351,9 +352,9 @@ export default class FPS implements IFPS_CODE {
     /**
      * Generate resulting string for QR code
      */
-    generate(): Event {
+    generate(): Response {
         let code: string = "",
-            event = new Event();
+            event = new Response();
         code += this.payload(FORMAT_INDICATOR, this.formatIndicator);
         code += this.payload(INITIATION_POINT, this.initiationPoint);
 
@@ -382,7 +383,7 @@ export default class FPS implements IFPS_CODE {
         code += this.payload(MERCHANT_CATEGORY_CODE, this.merchantCategory);
 
         // Transaction Data
-        code += this.payload(TRANSACTION_CURRENCY, FPS_CURRENCY[this.transactionCurrency]);
+        code += this.payload(TRANSACTION_CURRENCY, FPS_CURRENCY_LIST[this.transactionCurrency]);
         if (this.transactionAmount && parseFloat(this.transactionAmount) > 0) {
             code += this.payload(TRANSACTION_AMOUNT, this.transactionAmount);
         }
@@ -429,26 +430,26 @@ export default class FPS implements IFPS_CODE {
      * Set it to a static QR Code
      * @category Point of Initiation
      */
-    setStatic(): Event {
+    setStatic(): Response {
         this.initiationPoint = STATIC_QR_CODE as POINT_OF_INITIATION;
-        return new Event();
+        return new Response();
     }
 
     /**
      * Set it to a dynamic QR Code
      * @category Point of Initiation
      */
-    setDynamic(): Event {
+    setDynamic(): Response {
         this.initiationPoint = DYNAMIC_QR_CODE as POINT_OF_INITIATION;
-        return new Event();
+        return new Response();
     }
 
     /**
      * Set merchant account data
      * @category Merchant Account
      */
-    setMerchantAccount(x: VALID_OBJECT): Event {
-        let event = new Event();
+    setMerchantAccount(x: VALID_OBJECT): Response {
+        let event = new Response();
         for (let id in x) {
             if (event.isError()) break;
             event = this.setAlphanumericSpecial(x[id], 99);
@@ -458,7 +459,7 @@ export default class FPS implements IFPS_CODE {
                 if (!this.merchantAccountInfo.paymentNetwork) this.merchantAccountInfo.paymentNetwork = {};
                 if (id == MERCHANT_ACCOUNT_UNIQUE) continue;
                 if (id == MERCHANT_ACCOUNT_PARTICIPANT) {
-                    if (!(x[id] in FPS_PARTICIPANT)) {
+                    if (!(x[id] in FPS_PARTICIPANT_LIST)) {
                         event.setError("Invalid Merchant Code");
                         continue;
                     }
@@ -500,13 +501,15 @@ export default class FPS implements IFPS_CODE {
      *
      * @category Merchant Account
      */
-    getBank(toName: boolean = false): Event {
-        let event = new Event;
+    getBank(toName: boolean = false): Response {
+        let event = new Response;
         if (this?.merchantAccountInfo?.paymentNetwork && MERCHANT_ACCOUNT_PARTICIPANT in this.merchantAccountInfo.paymentNetwork) {
             event.data = this.merchantAccountInfo.paymentNetwork[MERCHANT_ACCOUNT_PARTICIPANT];
             if (toName) {
-                event.data = FPS_PARTICIPANT[event.data];
+                event.data = FPS_PARTICIPANT_LIST[event.data];
             }
+        } else {
+            event.setError('Merchant Account Participant Code not set');
         }
         return event;
     }
@@ -514,7 +517,7 @@ export default class FPS implements IFPS_CODE {
      * Set merchant account participant code
      * @category Merchant Account
      */
-    setBank(x: FPS_PARTICIPANTS): Event {
+    setBank(x: FPS_PARTICIPANTS): Response {
         let info: VALID_OBJECT = {};
         info[MERCHANT_ACCOUNT_PARTICIPANT] = x;
         return this.setMerchantAccount(info);
@@ -524,10 +527,12 @@ export default class FPS implements IFPS_CODE {
      * Get merchant account identifier - FPS ID
      * @category Merchant Account
      */
-    getFPSId(): Event {
-        let event = new Event;
+    getFPSId(): Response {
+        let event = new Response;
         if (this?.merchantAccountInfo?.paymentNetwork) {
             event.data = this.merchantAccountInfo.paymentNetwork[MERCHANT_ACCOUNT_IDENTIFIER_FPS];
+        } else {
+            event.setError('FPS ID not set');
         }
         return event;
     }
@@ -538,7 +543,7 @@ export default class FPS implements IFPS_CODE {
      *
      * @category Merchant Account
      */
-    setFPSId(x: number | string): Event {
+    setFPSId(x: number | string): Response {
         let info: VALID_OBJECT = {},
             id: string;
         if (typeof x === "number") id = x.toString();
@@ -551,10 +556,12 @@ export default class FPS implements IFPS_CODE {
      * Get merchant account identifier - Mobile Number
      * @category Merchant Account
      */
-    getMobile(): Event {
-        let event = new Event;
+    getMobile(): Response {
+        let event = new Response;
         if (this?.merchantAccountInfo?.paymentNetwork) {
             event.data = this.merchantAccountInfo.paymentNetwork[MERCHANT_ACCOUNT_IDENTIFIER_MOBILE];
+        } else {
+            event.setError('Mobile Number not set');
         }
         return event;
     }
@@ -565,7 +572,7 @@ export default class FPS implements IFPS_CODE {
      *
      * @category Merchant Account
      */
-    setMobile(x: number | string): Event {
+    setMobile(x: number | string): Response {
         let info: VALID_OBJECT = {},
             mobile: string;
         if (typeof x === "number") mobile = x.toString();
@@ -578,10 +585,12 @@ export default class FPS implements IFPS_CODE {
      * Get merchant account identifier - Email
      * @category Merchant Account
      */
-    getEmail(): Event {
-        let event = new Event;
+    getEmail(): Response {
+        let event = new Response;
         if (this?.merchantAccountInfo?.paymentNetwork) {
             event.data = this.merchantAccountInfo.paymentNetwork[MERCHANT_ACCOUNT_IDENTIFIER_EMAIL];
+        } else {
+            event.setError('Email not set');
         }
         return event;
     }
@@ -592,7 +601,7 @@ export default class FPS implements IFPS_CODE {
      *
      * @category Merchant Account
      */
-    setEmail(x: string): Event {
+    setEmail(x: string): Response {
         let info: VALID_OBJECT = {};
         info[MERCHANT_ACCOUNT_IDENTIFIER_EMAIL] = x;
         return this.setMerchantAccount(info);
@@ -604,8 +613,8 @@ export default class FPS implements IFPS_CODE {
      *
      * @category Transaction Data
      */
-    getAmount(toNumber: boolean = false): Event {
-        let event = new Event;
+    getAmount(toNumber: boolean = false): Response {
+        let event = new Response;
         event.data = this.transactionAmount;
         if (toNumber) {
             event.data = parseFloat(event.data);
@@ -616,7 +625,7 @@ export default class FPS implements IFPS_CODE {
      * Set transaction amount
      * @category Transaction Data
      */
-    setAmount(x: number): Event {
+    setAmount(x: number): Response {
         let event = this.setNumeric(x);
         if (event.isError()) {
             event.setError(`Transaction Amount ${event.message}`);
@@ -630,8 +639,8 @@ export default class FPS implements IFPS_CODE {
      * Set all the billing information
      * @category Billing Data
      */
-    setAdditionalInfo(x: VALID_OBJECT): Event {
-        let event = new Event();
+    setAdditionalInfo(x: VALID_OBJECT): Response {
+        let event = new Response();
         if (!this.additionalInfo) this.additionalInfo = {};
         if (ADDITIONAL_INFO_BILL in x) {
             event = this.setAlphanumericSpecial(x[ADDITIONAL_INFO_BILL], 25);
@@ -664,10 +673,12 @@ export default class FPS implements IFPS_CODE {
      * Get the billing number
      * @category Billing Data
      */
-    getBillNumber(): Event {
-        let event = new Event;
+    getBillNumber(): Response {
+        let event = new Response;
         if (this?.additionalInfo?.billNumber) {
             event.data = this.additionalInfo.billNumber;
+        } else {
+            event.setError('Bill Number not set');
         }
         return event;
     }
@@ -675,7 +686,7 @@ export default class FPS implements IFPS_CODE {
      * Set the billing number
      * @category Billing Data
      */
-    setBillNumber(x: string): Event {
+    setBillNumber(x: string): Response {
         let info: VALID_OBJECT = {};
         info[ADDITIONAL_INFO_BILL] = x;
         return this.setAdditionalInfo(info);
@@ -685,10 +696,12 @@ export default class FPS implements IFPS_CODE {
      * Get the reference of the transaction
      * @category Billing Data
      */
-    getReference(): Event {
-        let event = new Event;
+    getReference(): Response {
+        let event = new Response;
         if (this?.additionalInfo?.referenceLabel) {
             event.data = this.additionalInfo.referenceLabel;
+        } else {
+            event.setError('Reference Label not set');
         }
         return event;
     }
@@ -696,7 +709,7 @@ export default class FPS implements IFPS_CODE {
      * Set the reference of the transaction
      * @category Billing Data
      */
-    setReference(x: string): Event {
+    setReference(x: string): Response {
         let info: VALID_OBJECT = {};
         info[ADDITIONAL_INFO_REFERENCE] = x;
         return this.setAdditionalInfo(info);
@@ -708,7 +721,7 @@ export default class FPS implements IFPS_CODE {
      * See [[FPS.setCurrency]]
      * @category Transaction Data
      */
-    setHKD(): Event {
+    setHKD(): Response {
         return this.setCurrency(FPS.CURRENCY_HKD);
     }
     /**
@@ -717,7 +730,7 @@ export default class FPS implements IFPS_CODE {
      * See [[FPS.setCurrency]]
      * @category Transaction Data
      */
-    setCNY(): Event {
+    setCNY(): Response {
         return this.setCurrency(FPS.CURRENCY_CNY);
     }
 
@@ -727,11 +740,11 @@ export default class FPS implements IFPS_CODE {
      *
      * @category Transaction Data
      */
-    getCurrency(toCode: boolean = false): Event {
-        let event = new Event;
+    getCurrency(toCode: boolean = false): Response {
+        let event = new Response;
         event.data = this.transactionCurrency;
         if (toCode) {
-            event.data = FPS_CURRENCY[event.data];
+            event.data = FPS_CURRENCY_LIST[event.data];
         }
         return event;
     }
@@ -742,10 +755,10 @@ export default class FPS implements IFPS_CODE {
      *
      * @category Transaction Data
      */
-    setCurrency(x: FPS_CURRENCY): Event {
+    setCurrency(x: FPS_CURRENCY): Response {
         x = x.toUpperCase() as FPS_CURRENCY;
-        let event = new Event();
-        if (!(x in FPS_CURRENCY)) {
+        let event = new Response();
+        if (!(x in FPS_CURRENCY_LIST)) {
             event.setError("Invalid Currency Code");
         } else {
             this.transactionCurrency = x;

@@ -1,1 +1,1 @@
-{"version":3,"sources":["../../src/index.ts"],"names":[],"mappings":";;;;;;AAAA,kDAA0B;AAGjB,eAHF,cAAI,CAGE;AAFb,gDAAwB;AAET,cAFR,aAAG,CAEQ;AAElB,kBAAe,cAAI,CAAC","file":"index.js","sourceRoot":"../../src"}
+{"version":3,"sources":["../../src/index.ts"],"names":["HKQR_1","__importDefault","require","exports","HKQR","default","FPS_1","FPS"],"mappings":"sMAAA,MAAAA,OAAAC,gBAAAC,QAAA,WAGSC,QAAAC,KAHFJ,OAAAK,QACP,MAAAC,MAAAL,gBAAAC,QAAA,UAEeC,QAAAI,IAFRD,MAAAD,QAIPF,QAAAE,QAAeL,OAAAK","file":"index.js","sourceRoot":"../../src"}

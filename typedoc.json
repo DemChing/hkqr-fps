@@ -3,7 +3,8 @@
     "disableOutputCheck": true,
     "entryPoints": [
         "src/HKQR",
-        "src/FPS"
+        "src/FPS",
+        "src/lib/event.ts"
     ],
     "out": "docs"
 }
